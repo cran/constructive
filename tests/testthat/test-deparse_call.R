@@ -1,5 +1,5 @@
 test_that("deparse_call()", {
-  expect_snapshot({
+  expect_pipe_snapshot({
     deparse_call(call("::", 1, 2), style = FALSE)
     deparse_call(call("::", "a", quote(b)), style = FALSE)
     deparse_call(call("::", quote(a), "b"), style = FALSE)
@@ -32,11 +32,9 @@ test_that("deparse_call()", {
     deparse_call(call("(", 1, 2), style = FALSE)
     deparse_call(call("(", 1), style = FALSE)
     deparse_call(call("("), style = FALSE)
+    deparse_call(call("{"), style = FALSE)
     deparse_call(call("{", 1, 2), style = FALSE)
     deparse_call(call("{", 1, 2), one_liner = TRUE, style = FALSE)
-    deparse_call(quote({{x}}), style = FALSE) # proper tunnel
-    deparse_call(quote({{1}}), style = FALSE) # not a symbol
-    deparse_call(quote({{1}}), one_liner = TRUE, style = FALSE)
     deparse_call(call("non-syntactic", 1), style = FALSE)
 
     deparse_call(quote(foo(bar(baz(x), 1), arg = 2, empty=)), style = FALSE)
@@ -68,10 +66,20 @@ test_that("deparse_call()", {
     # looks odd, but that's on {styler} : https://github.com/r-lib/styler/issues/1029
     deparse_call(quote(a[[bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb=1, c]]))
 
-    # function with non syntactioc formal names
+    # Multiline calls
+    deparse_call(quote(a(b(c12345678901234567890123456789012345678901234567890123456789012345678901234567890))))
+    deparse_call(quote(a({c12345678901234567890123456789012345678901234567890123456789012345678901234567890}, b)))
+
+    # function with non syntactic formal names
     deparse_call(quote(function(`_x`) `_x`))
 
     # non-syntactig argument name
     deparse_call(quote(list(`a + b` = a + b)))
+  })
+
+  expect_snapshot({
+    deparse_call(quote({{x}}), style = FALSE) # proper tunnel
+    deparse_call(quote({{1}}), style = FALSE) # not a symbol
+    deparse_call(quote({{1}}), one_liner = TRUE, style = FALSE)
   })
 })

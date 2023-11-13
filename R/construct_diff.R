@@ -32,7 +32,7 @@
 #' construct_diff(x, y)
 #' }
 construct_diff <- function(
-    target, current, ..., data = NULL, pipe = c("base", "magrittr"), check = TRUE,
+    target, current, ..., data = NULL, pipe = NULL, check = TRUE,
     compare = compare_options(), one_liner = FALSE,
     template = getOption("constructive_opts_template"), mode = c("sidebyside", "auto", "unified", "context"), interactive = TRUE) {
   mode <- match.arg(mode)
@@ -76,7 +76,7 @@ construct_diff <- function(
 
 format_call_for_diffobj_banner <- function(call, interactive) {
   deparsed <- rlang::expr_deparse(call)
-  styled <- styler::style_text(deparsed)
+  styled <- highlight_if_prettycode_installed(deparsed)
   if (!interactive) return(paste(styled, collapse = " "))
   multiline <- paste(styled, collapse = "<BR>")
   idented <- gsub(" ", "&#x00A0;", multiline)

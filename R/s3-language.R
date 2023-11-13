@@ -36,12 +36,12 @@ is_corrupted_language <- function(x) {
 }
 
 constructors$language$default <- function(x, ..., one_liner = FALSE) {
-  if (identical(x, quote(expr=))) return("quote(expr=)")
+  if (identical(x, quote(expr=))) return("quote(expr = )")
   x_stripped <- x
   attributes(x_stripped) <- NULL
 
   if (is_expression2(x_stripped)) {
-    code <- deparse_call(x_stripped, one_liner = one_liner, style = FALSE)
+    code <- deparse_call(x_stripped, one_liner = one_liner, style = FALSE, collapse = FALSE)
     code <- .cstr_wrap(code, "quote", new_line = FALSE)
   } else {
     list_call <- .cstr_apply(as.list(x_stripped), "list", ...)
@@ -50,7 +50,7 @@ constructors$language$default <- function(x, ..., one_liner = FALSE) {
   repair_attributes_language(x, code, ...)
 }
 
-repair_attributes_language <- function(x, code, ..., pipe = "base") {
+repair_attributes_language <- function(x, code, ..., pipe = NULL) {
   .cstr_repair_attributes(
     x, code, ...,
     pipe = pipe,

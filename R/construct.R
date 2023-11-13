@@ -9,7 +9,8 @@
 #'   deparsing them further). Can also contain unnamed nested lists, environments, or
 #'   package names, in the latter case package exports and datasets will be considered.
 #'   In case of conflict, the last provided name is considered.
-#' @param pipe Which pipe to use, either "base" or "magrittr"
+#' @param pipe Which pipe to use, either `"base"` or `"magrittr"`.
+#'   Defaults to `"base"` for R >= 4.2, otherwise to `"magrittr"`.
 #' @param check Boolean. Whether to check if the created code reproduces the object
 #'   using `waldo::compare()`.
 #' @param compare Parameters passed to `waldo::compare()`, built with `compare_options()`.
@@ -29,7 +30,7 @@
 #' construct(head(cars), opts_data.frame("next"))
 #' construct(iris$Species)
 #' construct(iris$Species, opts_atomic(compress = FALSE), opts_factor("new_factor"))
-construct <- function(x, ..., data = NULL, pipe = c("base", "magrittr"), check = NULL,
+construct <- function(x, ..., data = NULL, pipe = NULL, check = NULL,
                       compare = compare_options(), one_liner = FALSE,
                       template = getOption("constructive_opts_template")) {
 
@@ -43,7 +44,6 @@ construct <- function(x, ..., data = NULL, pipe = c("base", "magrittr"), check =
     force(x),
     ellipsis::check_dots_unnamed(),
     abort_wrong_data(data),
-    pipe <- rlang::arg_match(pipe),
     abort_not_boolean(one_liner)
   )
 
@@ -70,11 +70,11 @@ construct <- function(x, ..., data = NULL, pipe = c("base", "magrittr"), check =
 
 #' @export
 #' @rdname construct
-construct_multi <- function(x, ..., data = NULL, pipe = c("base", "magrittr"), check = NULL,
+construct_multi <- function(x, ..., data = NULL, pipe = NULL, check = NULL,
                             compare = compare_options(), one_liner = FALSE,
                             template = getOption("constructive_opts_template")) {
   abort_not_env_or_named_list(x)
-  if (is.environment(x)) x <- as.list.environment(x)
+  if (is.environment(x)) x <- env2list(x)
   data <- process_data(data)
   constructives <- lapply(
     x, construct,  ...,
@@ -96,12 +96,34 @@ construct_multi <- function(x, ..., data = NULL, pipe = c("base", "magrittr"), c
   code <- unlist(code)
   Encoding(code) <- "UTF-8"
   if (is.null(code)) code <- character(0)
-  class(code) <- "vertical"
-  new_constructive(unname(code), issues)
+  code <- as_constructive_code(unname(code))
+  new_constructive(code, issues)
 }
 
 #' @export
 print.constructive <- function(x, ...) {
   print(x$code)
   invisible(x)
+}
+
+# this is  styler:::print.vertical with small tweaks:
+# * different default for `colored`
+# * fail rather than warn if colored is TRUE and not installed
+# * returns input invisibly
+
+#' @export
+print.constructive_code <- function(x, ..., colored = rlang::is_installed("prettycode"), style = NULL) {
+  if (colored) {
+    if (!is_installed("prettycode")) {
+      abort(paste("Could not use `colored = TRUE`, as the package prettycode is not",
+                  "installed. Please install it if you want to see colored output"))
+    }
+    x <- highlight_if_prettycode_installed(x, style = style)
+  }
+  cat(x, sep = "\n")
+  invisible(x)
+}
+
+as_constructive_code <- function(x) {
+  structure(x, class = "constructive_code")
 }

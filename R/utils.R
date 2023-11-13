@@ -12,7 +12,13 @@
 #' @return A character vector.
 #' @export
 .cstr_wrap <- function(args, fun, new_line = FALSE) {
-  if (new_line) return(c(paste0(fun, "("), args, ")"))
+  if (new_line) {
+    return(c(
+      paste0(fun, "("),
+      indent(args),
+      ")"
+    ))
+  }
   args[1] <- paste0(fun, "(", args[1])
   l <- length(args)
   args[l] <- paste0(args[l], ")")
@@ -36,18 +42,56 @@ name_and_append_comma <- function(x, nm, implicit_names = FALSE) {
 #' @param y A character vector. The code for the right hand side call.
 #' @param pipe A string. The pipe to use, `"plus"` is useful for ggplot code.
 #' @param one_liner A boolean. Whether to paste `x`, the pipe and `y` together
+#' @param indent A boolean. Whether to indent `y`
 #' on a same line (provided that `x` and `y` are strings and one liners themselves)
 #'
 #' @return A character vector
 #' @export
 #' @examples
-#' .cstr_pipe("iris", "head(2)", pipe = "base", one_liner = FALSE)
-#' .cstr_pipe("iris", "head(2)", pipe = "base", one_liner = TRUE)
-.cstr_pipe <- function(x, y, pipe, one_liner) {
-  pipe_symbol <- c(base = "|>", magrittr = "%>%", plus = "+")[[pipe]]
+#' .cstr_pipe("iris", "head(2)", pipe = "magrittr", one_liner = FALSE)
+#' .cstr_pipe("iris", "head(2)", pipe = "magrittr", one_liner = TRUE)
+.cstr_pipe <- function(x, y, pipe, one_liner, indent = TRUE) {
+  if (is.null(pipe)) {
+    if (getRversion() >= "4.2") {
+      pipe <- "base"
+    } else {
+      pipe <- "magrittr"
+    }
+  } else if (pipe != "plus") {
+    pipe <- rlang::arg_match(pipe, c("base", "magrittr"))
+  }
+  pipe_symbol <- get_pipe_symbol(pipe)
   if (one_liner) return(paste(x, pipe_symbol, y))
   x[length(x)] <- paste(x[length(x)], pipe_symbol)
-  c(x, y)
+  if (indent) {
+    c(x, indent(y))
+  } else {
+    c(x, y)
+  }
+}
+
+arg_match_pipe <- function(pipe, allow_plus = FALSE) {
+  if (is.null(pipe)) {
+    if (getRversion() >= "4.2") {
+      pipe <- "base"
+    } else {
+      pipe <- "magrittr"
+    }
+  } else if (!allow_plus || pipe != "plus") {
+    pipe <- rlang::arg_match(pipe, c("base", "magrittr"))
+  }
+
+  pipe
+}
+
+get_pipe_symbol <- function(pipe) {
+  pipe <- arg_match_pipe(pipe, allow_plus = TRUE)
+  c(base = "|>", magrittr = "%>%", plus = "+")[[pipe]]
+}
+
+get_pipe_placeholder <- function(pipe) {
+  pipe <- arg_match_pipe(pipe)
+  c(base = "_", magrittr = ".")[[pipe]]
 }
 
 
@@ -80,12 +124,12 @@ perfect_match <- function(needle, haystack) {
 
 flex_match <- function(needle, haystack) {
   # ignore attributes of needle and its environment-ness
-  if (is.environment(needle)) needle <- as.list.environment(needle)
+  if (is.environment(needle)) needle <- env2list(needle)
   attributes(needle) <- attributes(needle)["names"]
   # like identical but ignoring attributes of haystack elements and their environment-ness
   identical2 <- function(x, needle) {
     # as.list() doesn't work on environments with a S3 class excluding "environment"
-    if (is.environment(x)) x <- as.list.environment(x)
+    if (is.environment(x)) x <- env2list(x)
     attributes(x) <- attributes(x)["names"]
     identical(x, needle)
   }
@@ -224,4 +268,48 @@ snakeize <- function (x) {
 compare_proxy_weakref <- function(x, path) {
   wr <- list(key = rlang::wref_key(x), value = rlang::wref_value(x))
   list(object = wr, path = path)
+}
+
+# expr is like `R < "4.3" && dplyr >= "1.0.0"`
+# evaluate in env where R and package names are versions
+with_versions <- function(expr, lib.loc = NULL) {
+  expr <- substitute(expr)
+  vars <- setdiff(all.vars(expr), "R")
+  versions <- suppressWarnings(
+    lapply(vars, packageDescription, lib.loc = lib.loc, fields = "Version")
+  )
+  # dismiss vars that aren't packages
+  keep <- !is.na(versions)
+  versions <- versions[keep]
+  versions <- lapply(versions, as.package_version)
+  names(versions) <- vars[keep]
+  R <- R.Version()
+  R <- as.package_version(sprintf("%s.%s", R$major, R$minor))
+  eval(expr, envir = c(list(R = R), versions), enclos = parent.frame())
+}
+
+indent <- function(x, depth = 1) {
+  if (length(x) == 0) return(x)
+  paste0(paste0(rep("  ", depth), collapse = ""), x)
+}
+
+split_by_line <- function(x) {
+  with_newline <- paste0(x, "\n")
+  split <- strsplit(with_newline, "\n", fixed = TRUE)
+  unlist(split, recursive = FALSE)
+}
+
+# evaluate default values in the function's namespace
+# fun, pkg: strings
+defaults_arg_values <- function(fun, pkg) {
+  args_lng <- head(as.list(getFromNamespace(fun, pkg)), -1)
+  defaults_lng <- Filter(function(x) !identical(x, quote(expr=)), args_lng)
+  lapply(defaults_lng, eval, asNamespace(pkg))
+}
+
+highlight_if_prettycode_installed <- function(x, style = NULL) {
+  if (!is_installed("prettycode") || isFALSE(getOption("constructive_pretty"))) {
+    return(x)
+  }
+  prettycode::highlight(x, style = style %||% prettycode::default_style())
 }

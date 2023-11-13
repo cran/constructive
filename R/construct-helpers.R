@@ -50,7 +50,7 @@ process_data <- function(data, main = TRUE) {
 
 try_construct <- function(x, ...) {
   # deal early with special case x = quote(expr=)
-  if (identical(x, quote(expr=))) return("quote(expr=)")
+  if (identical(x, quote(expr=))) return("quote(expr = )")
   caller <- caller_env()
   rlang::try_fetch(.cstr_construct(x, ...), error = function(e) {
     #nocov start
@@ -61,15 +61,16 @@ try_construct <- function(x, ...) {
 
 try_parse <- function(code, one_liner) {
   caller <- caller_env()
-  scope <- if (one_liner) "indention" else "line_breaks"
   rlang::try_fetch(
-    styler::style_text(code, scope = scope),
+    rlang::parse_expr(paste0("{\n", paste(code, collapse = "\n"), "\n}\n")),
     error = function(e) {
       #nocov start
       abort("The code built by {constructive} could not be parsed.", parent = e, call = caller)
       #nocov end
     }
   )
+  code <- as_constructive_code(code)
+  code
 }
 
 try_eval <- function(styled_code, data, check, caller) {

@@ -28,7 +28,7 @@
   repair_attributes_ggplot(x, code, ...)
 }
 
-repair_attributes_ggplot <- function(x, code, pipe = "base", ...) {
+repair_attributes_ggplot <- function(x, code, pipe = NULL, ...) {
   .cstr_repair_attributes(
     x, code, pipe,
     idiomatic_class = c("gg", "ggplot"),
@@ -51,7 +51,7 @@ pipe_from_data <- function(plot_data, code, ..., pipe, one_liner) {
 pipe_to_layers <- function(code, layers, plot_env, ..., one_liner, env) {
   if (!length(layers)) return(code)
   layer_lines <- lapply(layers, .cstr_construct, one_liner = one_liner, env = plot_env, ...)
-  layer_code <- Reduce(function(x, y)  .cstr_pipe(x, y, pipe = "plus", one_liner = one_liner), layer_lines)
+  layer_code <- Reduce(function(x, y)  .cstr_pipe(x, y, pipe = "plus", one_liner = one_liner, indent = FALSE), layer_lines)
   .cstr_pipe(code, layer_code, pipe = "plus", one_liner = one_liner)
 }
 

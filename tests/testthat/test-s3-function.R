@@ -1,5 +1,5 @@
 test_that("function", {
-  expect_snapshot({
+  expect_pipe_snapshot({
     f1 <- as.function(alist(x=, x), .GlobalEnv)
     f2 <- as.function(alist(x=, {x}), .GlobalEnv)
 
@@ -35,9 +35,9 @@ test_that("function", {
     # testthat seems to remove srcrefs so we build it artificially
     f5 <- (function(x) {
       x
-    }) |>
+    }) %>%
       structure(
-        srcref = c(1L, 8L, 4L, 1L, 8L, 1L, 1L, 4L) |>
+        srcref = c(1L, 8L, 4L, 1L, 8L, 1L, 1L, 4L) %>%
           structure(
             srcfile = list2env(
               list(
@@ -46,12 +46,12 @@ test_that("function", {
                 filename = ""
               ),
               parent = .GlobalEnv
-            ) |>
+            ) %>%
               structure(class = c("srcfilecopy", "srcfile")),
             class = "srcref"
           )
       )
-    construct(f5, opts_function(environment = FALSE))
+    construct(f5, opts_function(environment = FALSE), pipe = "magrittr")
 
     # function without body and without srcref
     f6 <- function() NULL

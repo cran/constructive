@@ -124,7 +124,7 @@ construct_atomic <- function(x, ..., one_liner = FALSE) {
   if (l == 1 && is.null(names(x))) return(format_flex(x, all_na = TRUE))
 
   args <- vapply(x, format_flex, character(1), all_na = all(is.na(x)))
-  code <- .cstr_apply(args, "c", ..., new_line = FALSE, recurse = FALSE)
+  code <- .cstr_apply(args, "c", ..., recurse = FALSE)
   if (one_liner) code <- paste(code, collapse = " ")
   code
 }
@@ -209,9 +209,13 @@ format_flex <- function(x, all_na) {
     return("NaN")
   }
   if (as.numeric(formatted) == x) return(formatted)
-  formatted <- format(x, digits = 22)
-  if (as.numeric(formatted) == x) return(formatted)
+  # FIXME: Increase digits only for those array elements that don't match
+  for (digits in 16:22) {
+    formatted <- format(x, digits = digits)
+    if (as.numeric(formatted) == x) return(formatted)
+  }
   # remove from coverage since system dependent
+  # (similarly to .deparseOpts("hexNumeric"))
   sprintf("%a", x) # nocov
 }
 
@@ -247,7 +251,7 @@ format_unicode <- function(x, type = c("ascii", "latin", "character", "unicode")
 unescape_relevant_strings <- function(strings, strings0) {
   # https://stackoverflow.com/questions/42598040/
   odd_consecutive_backslashes_pattern <-
-    r"[(?<!\\)\\(?:\\{2})*(?!\\)]"
+    "(?<!\\\\)\\\\(?:\\\\{2})*(?!\\\\)" # r"[(?<!\\)\\(?:\\{2})*(?!\\)]"
   has_odd_consecutive_backlashes <-
     grepl(odd_consecutive_backslashes_pattern, strings, perl = TRUE)
 

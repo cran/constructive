@@ -129,6 +129,10 @@
     Output
       [1] "`(`()"
     Code
+      deparse_call(call("{"), style = FALSE)
+    Output
+      [1] "{ }"
+    Code
       deparse_call(call("{", 1, 2), style = FALSE)
     Output
       [1] "{\n  1\n  2\n}"
@@ -136,26 +140,6 @@
       deparse_call(call("{", 1, 2), one_liner = TRUE, style = FALSE)
     Output
       [1] "{1; 2}"
-    Code
-      deparse_call(quote({{ x }}), style = FALSE)
-    Output
-      [1] "{{ x }}"
-    Code
-      deparse_call(quote({
-        {
-          1
-        }
-      }), style = FALSE)
-    Output
-      [1] "{\n  {\n    1\n  }\n}"
-    Code
-      deparse_call(quote({
-        {
-          1
-        }
-      }), one_liner = TRUE, style = FALSE)
-    Output
-      [1] "{{1}}"
     Code
       deparse_call(call("non-syntactic", 1), style = FALSE)
     Output
@@ -270,6 +254,26 @@
         c
       ]]
     Code
+      deparse_call(quote(a(b(
+        c12345678901234567890123456789012345678901234567890123456789012345678901234567890))))
+    Output
+      a(
+        b(
+          c12345678901234567890123456789012345678901234567890123456789012345678901234567890
+        )
+      )
+    Code
+      deparse_call(quote(a({
+        c12345678901234567890123456789012345678901234567890123456789012345678901234567890
+      }, b)))
+    Output
+      a(
+        {
+          c12345678901234567890123456789012345678901234567890123456789012345678901234567890
+        },
+        b
+      )
+    Code
       deparse_call(quote(function(`_x`) `_x`))
     Output
       function(`_x`) `_x`
@@ -277,4 +281,27 @@
       deparse_call(quote(list(`a + b` = a + b)))
     Output
       list(`a + b` = a + b)
+
+---
+
+    Code
+      deparse_call(quote({{ x }}), style = FALSE)
+    Output
+      [1] "{{ x }}"
+    Code
+      deparse_call(quote({
+        {
+          1
+        }
+      }), style = FALSE)
+    Output
+      [1] "{\n  {\n    1\n  }\n}"
+    Code
+      deparse_call(quote({
+        {
+          1
+        }
+      }), one_liner = TRUE, style = FALSE)
+    Output
+      [1] "{{1}}"
 

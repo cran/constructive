@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(constructive)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(constructive)</span></code></pre></div>
 <p>We detail in this vignette how {constructive} works and how you might
 define custom constructors or custom <code>.cstr_construct.*()</code>
 methods.</p>
@@ -377,37 +377,37 @@ will call <code>.cstr_construct.atomic()</code> and
 attempts to match its data input to a list of objects provided to the
 <code>data</code> argument.</li>
 </ul>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>.cstr_construct</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; function (x, ..., data = NULL) </span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; {</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     data_name &lt;- perfect_match(x, data)</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     if (!is.null(data_name)) </span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         return(data_name)</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     UseMethod(&quot;.cstr_construct&quot;)</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x1108b8c50&gt;</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">.cstr_construct</span>(letters)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;c(&quot;                                                                                                      </span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2] &quot;\&quot;a\&quot;, \&quot;b\&quot;, \&quot;c\&quot;, \&quot;d\&quot;, \&quot;e\&quot;, \&quot;f\&quot;, \&quot;g\&quot;, \&quot;h\&quot;, \&quot;i\&quot;, \&quot;j\&quot;, \&quot;k\&quot;, \&quot;l\&quot;, \&quot;m\&quot;, \&quot;n\&quot;, \&quot;o\&quot;,&quot;</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3] &quot;\&quot;p\&quot;, \&quot;q\&quot;, \&quot;r\&quot;, \&quot;s\&quot;, \&quot;t\&quot;, \&quot;u\&quot;, \&quot;v\&quot;, \&quot;w\&quot;, \&quot;x\&quot;, \&quot;y\&quot;, \&quot;z\&quot;&quot;                             </span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4] &quot;)&quot;</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">construct</span>(letters)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c(</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;, &quot;f&quot;, &quot;g&quot;, &quot;h&quot;, &quot;i&quot;, &quot;j&quot;, &quot;k&quot;, &quot;l&quot;, &quot;m&quot;, &quot;n&quot;, &quot;o&quot;,</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &quot;p&quot;, &quot;q&quot;, &quot;r&quot;, &quot;s&quot;, &quot;t&quot;, &quot;u&quot;, &quot;v&quot;, &quot;w&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; )</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>.cstr_construct</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; function (x, ..., data = NULL) </span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; {</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt;     data_name &lt;- perfect_match(x, data)</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt;     if (!is.null(data_name)) </span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;         return(data_name)</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt;     UseMethod(&quot;.cstr_construct&quot;)</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; }</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x12ee44ae0&gt;</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">.cstr_construct</span>(letters)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; [1] &quot;c(&quot;                                                                                                        </span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; [2] &quot;  \&quot;a\&quot;, \&quot;b\&quot;, \&quot;c\&quot;, \&quot;d\&quot;, \&quot;e\&quot;, \&quot;f\&quot;, \&quot;g\&quot;, \&quot;h\&quot;, \&quot;i\&quot;, \&quot;j\&quot;, \&quot;k\&quot;, \&quot;l\&quot;, \&quot;m\&quot;, \&quot;n\&quot;, \&quot;o\&quot;,&quot;</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; [3] &quot;  \&quot;p\&quot;, \&quot;q\&quot;, \&quot;r\&quot;, \&quot;s\&quot;, \&quot;t\&quot;, \&quot;u\&quot;, \&quot;v\&quot;, \&quot;w\&quot;, \&quot;x\&quot;, \&quot;y\&quot;, \&quot;z\&quot;&quot;                             </span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; [4] &quot;)&quot;</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="fu">construct</span>(letters)</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; c(</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;   &quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;, &quot;f&quot;, &quot;g&quot;, &quot;h&quot;, &quot;i&quot;, &quot;j&quot;, &quot;k&quot;, &quot;l&quot;, &quot;m&quot;, &quot;n&quot;, &quot;o&quot;,</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt;   &quot;p&quot;, &quot;q&quot;, &quot;r&quot;, &quot;s&quot;, &quot;t&quot;, &quot;u&quot;, &quot;v&quot;, &quot;w&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; )</span></span></code></pre></div>
 </div>
 <div id="cstr_construct.-methods" class="section level2">
 <h2><code>.cstr_construct.?()</code> methods</h2>
 <p><code>.cstr_construct.?()</code> methods typically have this
 form:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.cstr_construct.Date <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ...) {</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  opts <span class="ot">&lt;-</span> <span class="fu">.cstr_fetch_opts</span>(<span class="st">&quot;Date&quot;</span>, ...)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is_corrupted_Date</span>(x) <span class="sc">||</span> opts<span class="sc">$</span>constructor <span class="sc">==</span> <span class="st">&quot;next&quot;</span>) <span class="fu">return</span>(<span class="fu">NextMethod</span>())</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  constructor <span class="ot">&lt;-</span> constructors<span class="sc">$</span>Date[[opts<span class="sc">$</span>constructor]]</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">constructor</span>(x, ..., <span class="at">origin =</span> opts<span class="sc">$</span>origin)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>.cstr_construct.Date <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ...) {</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  opts <span class="ot">&lt;-</span> <span class="fu">.cstr_fetch_opts</span>(<span class="st">&quot;Date&quot;</span>, ...)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is_corrupted_Date</span>(x) <span class="sc">||</span> opts<span class="sc">$</span>constructor <span class="sc">==</span> <span class="st">&quot;next&quot;</span>) <span class="fu">return</span>(<span class="fu">NextMethod</span>())</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  constructor <span class="ot">&lt;-</span> constructors<span class="sc">$</span>Date[[opts<span class="sc">$</span>constructor]]</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">constructor</span>(x, ..., <span class="at">origin =</span> opts<span class="sc">$</span>origin)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>}</span></code></pre></div>
 <ul>
 <li><code>.cstr_fetch_opts()</code> gathers options provided to
 <code>construct()</code> through the <code>opts_*()</code> function (see
@@ -431,20 +431,20 @@ way to choose a constructor and object retrieved by
 <code>.cstr_fetch_opts()</code> in the <code>.cstr_construct()</code>
 method.</p>
 <p>It should always have this form:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>opts_Date <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">constructor =</span> <span class="fu">c</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;as.Date&quot;</span>, <span class="st">&quot;as_date&quot;</span>, <span class="st">&quot;date&quot;</span>, <span class="st">&quot;new_date&quot;</span>,  <span class="st">&quot;as.Date.numeric&quot;</span>, </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;as_date.numeric&quot;</span>, <span class="st">&quot;next&quot;</span>, <span class="st">&quot;atomic&quot;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    ..., </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">origin =</span> <span class="st">&quot;1970-01-01&quot;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  ) {</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">.cstr_combine_errors</span>(</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    constructor <span class="ot">&lt;-</span> <span class="fu">.cstr_match_constructor</span>(constructor),</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    ellipsis<span class="sc">::</span><span class="fu">check_dots_empty</span>()</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">.cstr_options</span>(<span class="st">&quot;Date&quot;</span>, <span class="at">constructor =</span> constructor, <span class="at">origin =</span> origin)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>opts_Date <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>    <span class="at">constructor =</span> <span class="fu">c</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>      <span class="st">&quot;as.Date&quot;</span>, <span class="st">&quot;as_date&quot;</span>, <span class="st">&quot;date&quot;</span>, <span class="st">&quot;new_date&quot;</span>,  <span class="st">&quot;as.Date.numeric&quot;</span>, </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>      <span class="st">&quot;as_date.numeric&quot;</span>, <span class="st">&quot;next&quot;</span>, <span class="st">&quot;atomic&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    ),</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    ..., </span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="at">origin =</span> <span class="st">&quot;1970-01-01&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  ) {</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="fu">.cstr_combine_errors</span>(</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    constructor <span class="ot">&lt;-</span> <span class="fu">.cstr_match_constructor</span>(constructor),</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>    ellipsis<span class="sc">::</span><span class="fu">check_dots_empty</span>()</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  )</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="fu">.cstr_options</span>(<span class="st">&quot;Date&quot;</span>, <span class="at">constructor =</span> constructor, <span class="at">origin =</span> origin)</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>}</span></code></pre></div>
 <ul>
 <li>The class is present in the name of the <code>opts_?()</code>
 function and as the first argument of <code>.cstr_options()</code>.</li>
@@ -455,19 +455,19 @@ default constructor</li>
 we did here with <code>origin</code></li>
 </ul>
 <p>The following code illustrates how the information is retrieved.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># .cstr_fetch_opts() takes a class and the dots and retrieves the relevant options</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># if none were provided it falls back on the default value for the relevant opts_?() function</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">.cstr_fetch_opts</span>(<span class="st">&quot;Date&quot;</span>, ...)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">test</span>(<span class="fu">opts_Date</span>(<span class="st">&quot;as_date&quot;</span>), <span class="fu">opts_data.frame</span>(<span class="st">&quot;read.table&quot;</span>))</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;constructive_options_Date/constructive_options&gt;</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; constructor: &quot;as_date&quot;</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; origin:      &quot;1970-01-01&quot;</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">test</span>()</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;constructive_options_Date/constructive_options&gt;</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; constructor: &quot;as.Date&quot;</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; origin:      &quot;1970-01-01&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># .cstr_fetch_opts() takes a class and the dots and retrieves the relevant options</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co"># if none were provided it falls back on the default value for the relevant opts_?() function</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="fu">.cstr_fetch_opts</span>(<span class="st">&quot;Date&quot;</span>, ...)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>}</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">test</span>(<span class="fu">opts_Date</span>(<span class="st">&quot;as_date&quot;</span>), <span class="fu">opts_data.frame</span>(<span class="st">&quot;read.table&quot;</span>))</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; &lt;constructive_options_Date/constructive_options&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; constructor: &quot;as_date&quot;</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; origin:      &quot;1970-01-01&quot;</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="fu">test</span>()</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; &lt;constructive_options_Date/constructive_options&gt;</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; constructor: &quot;as.Date&quot;</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; origin:      &quot;1970-01-01&quot;</span></span></code></pre></div>
 </div>
 <div id="is_corrupted_-function" class="section level2">
 <h2><code>is_corrupted_?()</code> function</h2>
@@ -484,22 +484,22 @@ on corrupted objects but instead helps us understand them.</p>
 date but it’s corrupted, a date should not be built on top of characters
 and this object cannot be built with <code>as.Date()</code> or other
 idiomatic date constructors.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="st">&quot;12345&quot;</span>, <span class="at">class =</span> <span class="st">&quot;Date&quot;</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>x</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;2003-10-20&quot;</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>x <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in unclass(e1) + unclass(e2): non-numeric argument to binary operator</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="st">&quot;12345&quot;</span>, <span class="at">class =</span> <span class="st">&quot;Date&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>x</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;2003-10-20&quot;</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>x <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; Error in unclass(e1) + unclass(e2): non-numeric argument to binary operator</span></span></code></pre></div>
 <p>We have defined :</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>is_corrupted_Date <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">!</span><span class="fu">is.double</span>(x)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>is_corrupted_Date <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="sc">!</span><span class="fu">is.double</span>(x)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>}</span></code></pre></div>
 <p>And as a consequence the next method,
 <code>.cstr_construct.default()</code> will be called through
 <code>NextMethod()</code> and will handle the object using an atomic
 vector constructor:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">construct</span>(x)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &quot;12345&quot; |&gt;</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   structure(class = &quot;Date&quot;)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">construct</span>(x)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt; &quot;12345&quot; |&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt;   structure(class = &quot;Date&quot;)</span></span></code></pre></div>
 </div>
 <div id="constructors" class="section level2">
 <h2>constructors</h2>
@@ -507,26 +507,26 @@ vector constructor:</p>
 object, itself containing environments named like classes, the latter
 contain the constructor functions.</p>
 <p>It is retrieved in the <code>.cstr_construct()</code> method by:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>constructor <span class="ot">&lt;-</span> constructors<span class="sc">$</span>Date[[opts<span class="sc">$</span>constructor]]</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>constructor <span class="ot">&lt;-</span> constructors<span class="sc">$</span>Date[[opts<span class="sc">$</span>constructor]]</span></code></pre></div>
 <p>For instance the default constructor for “Date” is :</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>constructors<span class="sc">$</span>Date<span class="sc">$</span>as.Date</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; function (x, ..., origin = &quot;1970-01-01&quot;) </span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; {</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     if (any(is.infinite(x)) &amp;&amp; any(is.finite(x))) {</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         x_dbl &lt;- unclass(x)</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         if (origin != &quot;1970-01-01&quot;) </span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             x_dbl &lt;- x_dbl - as.numeric(as.Date(origin))</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         code &lt;- .cstr_apply(list(x_dbl, origin = origin), &quot;as.Date&quot;, </span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             ..., new_line = FALSE)</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     }</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     else {</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         code &lt;- .cstr_apply(list(format(x)), &quot;as.Date&quot;, ..., </span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             new_line = FALSE)</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     }</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     repair_attributes_Date(x, code, ...)</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x10647ec30&gt;</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>constructors<span class="sc">$</span>Date<span class="sc">$</span>as.Date</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt; function (x, ..., origin = &quot;1970-01-01&quot;) </span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt; {</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt;     if (any(is.infinite(x)) &amp;&amp; any(is.finite(x))) {</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt;         x_dbl &lt;- unclass(x)</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt;         if (origin != &quot;1970-01-01&quot;) </span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt;             x_dbl &lt;- x_dbl - as.numeric(as.Date(origin))</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt;         code &lt;- .cstr_apply(list(x_dbl, origin = origin), &quot;as.Date&quot;, </span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt;             ..., new_line = FALSE)</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt;     }</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt;     else {</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt;         code &lt;- .cstr_apply(list(format(x)), &quot;as.Date&quot;, ..., </span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt;             new_line = FALSE)</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt;     }</span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="co">#&gt;     repair_attributes_Date(x, code, ...)</span></span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co">#&gt; }</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x12dfbb8a0&gt;</span></span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span></code></pre></div>
 <p>A function call is made of a function and its arguments. A
 constructor sets the function and constructs its arguments recursively.
 This is done with the help of <code>.cstr_apply()</code> once these
@@ -534,12 +534,12 @@ output have been prepared. In the case above we have 2 logical paths
 because dates can be infinite but date vectors containing infinite
 elements cannot be represented by
 <code>as.Date(&lt;character&gt;)</code>, our preferred choice.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="fu">c</span>(<span class="dv">12345</span>, <span class="dv">20000</span>), <span class="at">class =</span> <span class="st">&quot;Date&quot;</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="fu">c</span>(<span class="dv">12345</span>, <span class="cn">Inf</span>), <span class="at">class =</span> <span class="st">&quot;Date&quot;</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>constructors<span class="sc">$</span>Date<span class="sc">$</span><span class="fu">as.Date</span>(x)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;as.Date(c(\&quot;2003-10-20\&quot;, \&quot;2024-10-04\&quot;))&quot;</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>constructors<span class="sc">$</span>Date<span class="sc">$</span><span class="fu">as.Date</span>(y)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;as.Date(c(12345, Inf), origin = \&quot;1970-01-01\&quot;)&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="fu">c</span>(<span class="dv">12345</span>, <span class="dv">20000</span>), <span class="at">class =</span> <span class="st">&quot;Date&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="fu">c</span>(<span class="dv">12345</span>, <span class="cn">Inf</span>), <span class="at">class =</span> <span class="st">&quot;Date&quot;</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>constructors<span class="sc">$</span>Date<span class="sc">$</span><span class="fu">as.Date</span>(x)</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;as.Date(c(\&quot;2003-10-20\&quot;, \&quot;2024-10-04\&quot;))&quot;</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>constructors<span class="sc">$</span>Date<span class="sc">$</span><span class="fu">as.Date</span>(y)</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; [1] &quot;as.Date(c(12345, Inf), origin = \&quot;1970-01-01\&quot;)&quot;</span></span></code></pre></div>
 <p>It’s important to consider corner cases when defining a constructor,
 if some cases can’t be handled by the constructor we should fall back to
 another constructor or to another <code>.cstr_construct()</code>
@@ -560,15 +560,15 @@ contains list columns not defined using <code>I()</code>, since
 <p>These are needed to adjust the attributes of an object after
 idiomatic constructors such as <code>as.Date()</code> have defined their
 data and canonical attributes.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="fu">c</span>(<span class="dv">12345</span>, <span class="dv">20000</span>), <span class="at">class =</span> <span class="st">&quot;Date&quot;</span>, <span class="at">some_attr =</span> <span class="dv">42</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># attributes are not visible due to &quot;Date&quot;&#39;s printing method</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>x</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;2003-10-20&quot; &quot;2024-10-04&quot;</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># but constructive retrieves them</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>constructors<span class="sc">$</span>Date<span class="sc">$</span><span class="fu">as.Date</span>(x)</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;as.Date(c(\&quot;2003-10-20\&quot;, \&quot;2024-10-04\&quot;)) |&gt;&quot;</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2] &quot;structure(some_attr = 42)&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="fu">c</span>(<span class="dv">12345</span>, <span class="dv">20000</span>), <span class="at">class =</span> <span class="st">&quot;Date&quot;</span>, <span class="at">some_attr =</span> <span class="dv">42</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co"># attributes are not visible due to &quot;Date&quot;&#39;s printing method</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>x</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;2003-10-20&quot; &quot;2024-10-04&quot;</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co"># but constructive retrieves them</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>constructors<span class="sc">$</span>Date<span class="sc">$</span><span class="fu">as.Date</span>(x)</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; [1] &quot;as.Date(c(\&quot;2003-10-20\&quot;, \&quot;2024-10-04\&quot;)) |&gt;&quot;</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt; [2] &quot;  structure(some_attr = 42)&quot;</span></span></code></pre></div>
 <p><code>.cstr_repair_attributes()</code> essentially sets attributes
 with exceptions :</p>
 <ul>
@@ -584,22 +584,22 @@ factors)</li>
 </ul>
 <p><code>.cstr_repair_attributes()</code> does a bit more but we don’t
 need to dive deeper in this vignette.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>constructive<span class="sc">:::</span>repair_attributes_Date</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; function (x, code, ...) </span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; {</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     .cstr_repair_attributes(x, code, ..., idiomatic_class = &quot;Date&quot;)</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x104b5fa58&gt;</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>constructive<span class="sc">:::</span>repair_attributes_factor</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; function (x, code, ...) </span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; {</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     .cstr_repair_attributes(x, code, ..., ignore = &quot;levels&quot;, </span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         idiomatic_class = &quot;factor&quot;)</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x1071c7b38&gt;</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>constructive<span class="sc">:::</span>repair_attributes_Date</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt; function (x, code, ...) </span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; {</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt;     .cstr_repair_attributes(x, code, ..., idiomatic_class = &quot;Date&quot;)</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; }</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x1380e9820&gt;</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>constructive<span class="sc">:::</span>repair_attributes_factor</span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; function (x, code, ...) </span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; {</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt;     .cstr_repair_attributes(x, code, ..., ignore = &quot;levels&quot;, </span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt;         idiomatic_class = &quot;factor&quot;)</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; }</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x12d13a098&gt;</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span></code></pre></div>
 </div>
 <div id="register-a-new-class" class="section level2">
 <h2>Register a new class</h2>
@@ -619,14 +619,14 @@ you should :</p>
 </ul>
 <p>Do the latter in <code>.onload()</code> if the new constructor is to
 be part of a package, for instance.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># in zzz.R</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>.onLoad <span class="ot">&lt;-</span> <span class="cf">function</span>(libname, pkgname) {</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">.cstr_register_constructors</span>(</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    class_name, </span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">constructor_name1 =</span> constructor1, </span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">constructor_name2 =</span> constructor2</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># in zzz.R</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>.onLoad <span class="ot">&lt;-</span> <span class="cf">function</span>(libname, pkgname) {</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="fu">.cstr_register_constructors</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>    class_name, </span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>    <span class="at">constructor_name1 =</span> constructor1, </span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>    <span class="at">constructor_name2 =</span> constructor2</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>  )</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 
 

@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -20,7 +20,7 @@ construct(letters)
   constructor(x, ..., origin = opts$origin)
 }
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  opts_Date <- function(
 #      constructor = c(
 #        "as.Date", "as_date", "date", "new_date",  "as.Date.numeric",
@@ -45,7 +45,7 @@ test <- function(...) {
 test(opts_Date("as_date"), opts_data.frame("read.table"))
 test()
 
-## ---- error = TRUE------------------------------------------------------------
+## ----error = TRUE-------------------------------------------------------------
 x <- structure("12345", class = "Date")
 x
 x + 1
@@ -58,7 +58,7 @@ is_corrupted_Date <- function(x) {
 ## -----------------------------------------------------------------------------
 construct(x)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  constructor <- constructors$Date[[opts$constructor]]
 
 ## -----------------------------------------------------------------------------
@@ -83,7 +83,7 @@ constructive:::repair_attributes_Date
 
 constructive:::repair_attributes_factor
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  # in zzz.R
 #  .onLoad <- function(libname, pkgname) {
 #    .cstr_register_constructors(

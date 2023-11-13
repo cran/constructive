@@ -5,7 +5,7 @@ constructors$dm <- new.env()
 #' These options will be used on objects of class 'dm'.
 #'
 #' Depending on `constructor`, we construct the environment as follows:
-#' * `"dm"` (default): We use `dm::dm()` and other functions from {dm} to adjust the content.
+#' * `"dm"` (default): We use `dm::dm()` and other functions from \pkg{dm} to adjust the content.
 #' * `"next"` : Use the constructor for the next supported class. Call `.class2()`
 #'   on the object to see in which order the methods will be tried.
 #' * `"list"` : Use `list()` and treat the class as a regular attribute.
@@ -41,6 +41,8 @@ constructors$dm$dm <- function(x, ..., one_liner, pipe) {
   code <- .cstr_apply(
     named_list_of_tables, fun = "dm::dm", trailing_comma = TRUE, implicit_names = TRUE, one_liner = one_liner, pipe = pipe, ...)
 
+  pipe_collapse <- paste0(" ", get_pipe_symbol(pipe), "\n  ")
+
   pk_code <- unlist(Map(
     function(table, pk_tibble) {
       if (!nrow(pk_tibble)) return(character())
@@ -51,7 +53,7 @@ constructors$dm$dm <- function(x, ..., one_liner, pipe) {
     def$pks,
     USE.NAMES = FALSE))
   if (length(pk_code)) {
-    pk_code <- paste(pk_code, collapse = "|>\n")
+    pk_code <- paste(pk_code, collapse = pipe_collapse)
     code <- .cstr_pipe(code, pk_code, pipe, one_liner)
   }
 
@@ -62,7 +64,7 @@ constructors$dm$dm <- function(x, ..., one_liner, pipe) {
         paste0(
           "dm::dm_add_fk(",
           protect(table), ", ",
-          paste(.cstr_construct(column, pipe = pipe, one_liner = one_liner, ...), collapse = "\n"), ",",
+          paste(.cstr_construct(column, pipe = pipe, one_liner = one_liner, ...), collapse = "\n"), ", ",
           protect(ref_table), ", ",
           paste(.cstr_construct(ref_column, pipe = pipe, one_liner = one_liner, ...), collapse = "\n"), ")"
         )
@@ -76,7 +78,7 @@ constructors$dm$dm <- function(x, ..., one_liner, pipe) {
     def$fks,
     USE.NAMES = FALSE))
   if (length(fk_code)) {
-    fk_code <- paste(fk_code, collapse = "|>\n")
+    fk_code <- paste(fk_code, collapse = pipe_collapse)
     code <- .cstr_pipe(code, fk_code, pipe, one_liner)
   }
 
@@ -85,7 +87,7 @@ constructors$dm$dm <- function(x, ..., one_liner, pipe) {
     color_code <- .cstr_apply(colors, "dm::dm_set_colors", pipe = pipe, one_liner = one_liner, ...)
     code <- .cstr_pipe(code, color_code, pipe, one_liner)
   }
-
+  code <- split_by_line(code)
   repair_attributes_dm(x, code, ..., one_liner = one_liner, pipe = pipe)
 }
 
@@ -93,7 +95,7 @@ constructors$dm$list <- function(x, ...) {
   .cstr_construct.list(x, ...)
 }
 
-repair_attributes_dm <- function(x, code, ..., pipe = "base") {
+repair_attributes_dm <- function(x, code, ..., pipe = NULL) {
   .cstr_repair_attributes(
     x, code, ...,
     pipe = pipe,

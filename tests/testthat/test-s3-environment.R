@@ -1,5 +1,5 @@
 test_that("environment", {
-  expect_snapshot({
+  expect_pipe_snapshot({
     # handle special cases
     construct(globalenv())
     construct(baseenv())
@@ -21,14 +21,12 @@ test_that("environment", {
     e1$x <- 1
     e2 <- new.env(parent = e1)
     e2$y <- 2
+    e2$.z <- 3
     construct(e2, opts_environment(constructor = "list2env")) # constructor = "list2env", recurse = FALSE
-    construct(e2, opts_environment(constructor = "list2env", recurse = TRUE))
     construct(e2, opts_environment(constructor = "new_environment"))
-    construct(e2, opts_environment(constructor = "new_environment", recurse = TRUE))
     construct(e2, opts_environment(constructor = "new.env"))
     construct(e2, opts_environment(constructor = "topenv"))
     construct(e2, opts_environment(constructor = "as.environment"))
-    construct(tidyselect::peek_vars, opts_environment(predefine = TRUE), opts_function(environment = TRUE))
     # circularity
     evalq({
     e <- new.env()
@@ -36,5 +34,15 @@ test_that("environment", {
     foo <- evalq(~a, e)
     construct(foo, opts_environment(predefine = TRUE), opts_formula(environment = TRUE))
     }, .GlobalEnv)
+  })
+  skip_if(with_versions(R < "4.2"))
+  expect_snapshot({
+    construct(e2, opts_environment(constructor = "list2env", recurse = TRUE))
+    construct(e2, opts_environment(constructor = "new_environment", recurse = TRUE))
+  })
+
+  skip_if(identical(Sys.getenv("R_COVR"), "true"))
+  expect_snapshot({
+    construct(constructive::.cstr_construct, opts_environment(predefine = TRUE), opts_function(environment = TRUE))
   })
 })

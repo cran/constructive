@@ -89,7 +89,10 @@ constructors$data.frame$read.table <- function(x, ...) {
   code_df[] <- lapply(code_df, format, justify = "right")
 
   # collapse table into code
-  code <- c("read.table(header = TRUE, text = \"", do.call(paste, code_df), "\")")
+  code <- paste(
+    c("read.table(header = TRUE, text = \"", do.call(paste, code_df), "\")"),
+    collapse = "\n"
+  )
 
   # repair
   repair_attributes_data.frame(x, code, ...)
@@ -125,7 +128,7 @@ constructors$data.frame$data.frame <- function(x, ...) {
   repair_attributes_data.frame(x, code, ...)
 }
 
-repair_attributes_data.frame <- function(x, code, ..., pipe = "base") {
+repair_attributes_data.frame <- function(x, code, ..., pipe = NULL) {
   ignore <- "row.names"
   if (identical(names(x), character())) ignore <- c(ignore, "names")
   .cstr_repair_attributes(

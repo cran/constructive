@@ -3,19 +3,19 @@
 #' This is an alternative to `base::deparse()` and `rlang::expr_deparse()` that
 #' handles additional corner cases and fails when encountering tokens other than
 #' symbols and syntactic literals where cited alternatives would produce non syntactic code.\cr\cr
-#' Moreover it will produce a one liner if `one_liner = TRUE` and
-#' will attempt to use the base pipe on nested calls if `pipe = TRUE`.\cr\cr
-#' By default the output is styled with {styler}, if style is set to `FALSE` a regular
-#' string is returned, using `"\n"` for new lines.
 #'
 #' @param call A call
 #' @param one_liner Boolean. Whether to collapse multi-line expressions on a single line using
 #'   semicolons
 #' @param pipe Boolean. Whether to use the base pipe to disentangle nested calls. This
 #'   works best on simple calls.
-#' @param style Boolean. Whether to use `styler::style_text()` on the output
+#' @param style Boolean. Whether to give a class "constructive_code" on the output
+#'   for pretty printing.
+#' @param collapse Boolean. Whether to collapse the output to a single string,
+#'   won't be directly visible if `style` is `TRUE`
 #'
-#' @return a string or a styled character vector
+#' @return a string or a character vector, with a class "constructive_code" for pretty
+#'   printing if `style` is `TRUE`
 #' @export
 #'
 #' @examples
@@ -27,15 +27,17 @@
 #' # some corner cases are handled better than in base R
 #' deparse(call("$", 1, 1)) # returns non syntactic output
 #' deparse_call(call("$", 1, 1))
-deparse_call <- function(call, one_liner = FALSE, pipe = FALSE, style = TRUE) {
+deparse_call <- function(call, one_liner = FALSE, pipe = FALSE, style = TRUE, collapse = !style) {
   code <- rlang::try_fetch(
     deparse_call_impl(call, one_liner, 0, pipe),
     error = function(cnd) {
       abort("`call` must only be made of symbols and syntactic literals", parent = cnd)
     })
+  if (!collapse) {
+    code <- split_by_line(code)
+  }
   if (style) {
-    scope <- if (one_liner) "indention" else "line_breaks"
-    code <- styler::style_text(code, scope = scope)
+    code <- as_constructive_code(code)
   }
   code
 }
@@ -155,7 +157,10 @@ deparse_call_impl <- function(call, one_liner = FALSE, indent = 0, pipe = FALSE,
     return(sprintf("(%s)", deparse_call_impl(call[[2]], one_liner, indent, pipe)))
   }
 
-  if (caller == "{" && length(call) > 1) {
+  if (caller == "{") {
+    if (length(call) == 1) {
+      return("{ }")
+    }
     # tunneling
     if (rlang::is_call(call[[2]], "{") && is.symbol(call[[c(2, 2)]])) {
       return(sprintf("{{ %s }}", as.character(call[[c(2, 2)]])))
@@ -165,10 +170,9 @@ deparse_call_impl <- function(call, one_liner = FALSE, indent = 0, pipe = FALSE,
       args <- paste(vapply(call[-1], deparse_call_impl, character(1), one_liner = one_liner, indent = indent, pipe = pipe), collapse = "; ")
       return(sprintf("{%s}", args))
     }
-    args <- vapply(call[-1], deparse_call_impl, character(1), one_liner = one_liner, indent = indent + 2, pipe = pipe)
-    args <- paste0(strrep(" ", indent + 2), args)
-    args <- paste(args, collapse = "\n")
-    return(sprintf("{\n%s\n%s}", args, strrep(" ", indent)))
+    args <- vapply(call[-1], deparse_call_impl, character(1), one_liner = one_liner, indent = indent + 1, pipe = pipe)
+    args <- paste(indent(args, depth = indent + 1), collapse = "\n")
+    return(sprintf("{\n%s\n%s}", args, indent("", depth = indent)))
   }
 
   if (is.symbol(caller_lng)) {
@@ -181,7 +185,13 @@ deparse_call_impl <- function(call, one_liner = FALSE, indent = 0, pipe = FALSE,
     other_args <- paste(rlang::names2(other_args), "=", other_args)
     other_args <- sub("^ = ", "", other_args)
     if (!is.call(call[[2]]) || endsWith(arg1, ")") || endsWith(arg1, "}")) {
-    return(sprintf("%s |> %s(%s)", arg1, caller, paste(other_args, collapse = ", ")))
+      return(sprintf(
+        "%s %s %s(%s)",
+        arg1,
+        get_pipe_symbol(NULL),
+        caller,
+        paste(other_args, collapse = ", ")
+      ))
     }
   }
   args <- deparse_named_args_to_string(call[-1], one_liner = one_liner, indent = indent)
@@ -204,16 +214,15 @@ is_infix_narrow <- function(x) {
   x %in% c("::", ":::", "$", "@", "^", ":")
 }
 
-# FIXME: better handling of indent, doesn't impact if we style
 deparse_named_args_to_string <- function(args, one_liner, indent) {
   if (length(args) == 0) {
     return("")
   }
-  args <- vapply(args, deparse_call_impl, character(1), one_liner = one_liner, indent = indent)
+  args <- vapply(args, deparse_call_impl, character(1), one_liner = one_liner, indent = indent + 1)
   args <- paste(protect(rlang::names2(args)), "=", args)
   args <- sub("^ = ", "", args)
   # FIXME: the 80 is a bit arbitrary, since we don't account for indent and length of caller
   if (one_liner || max(nchar(args)) < 80) return(paste(args, collapse = ", "))
-  args <- paste(args, collapse = ",\n")
-  paste0("\n", args, "\n")
+  args <- paste(indent(args, depth = indent + 1), collapse = ",\n")
+  paste0("\n", args, "\n", indent("", depth = indent))
 }
