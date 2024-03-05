@@ -20,7 +20,7 @@ constructors$dots <- new.env()
 opts_dots <- function(constructor = c("default"), ...) {
   .cstr_combine_errors(
     constructor <- .cstr_match_constructor(constructor, "dots"),
-    ellipsis::check_dots_empty()
+    check_dots_empty()
   )
   .cstr_options("dots", constructor = constructor)
 }
@@ -48,7 +48,7 @@ constructors$dots$default <- function(x, ...) {
     code <- deparse_call(code_lng, style = FALSE, collapse = FALSE)
     env_code <- .cstr_construct(unique_env, ...)
     code <- .cstr_apply(list(code, envir = env_code), "evalq", recurse = FALSE)
-    return(code)
+    return(repair_attributes_dots(x, code, ...))
   }
   # strip class since it's not necessary for splicing
   quo_code <- .cstr_construct(unclass(quo_dots), ...)
@@ -60,6 +60,5 @@ constructors$dots$default <- function(x, ...) {
 }
 
 repair_attributes_dots <- function(x, code, ...) {
-  # FIXME: add a repair fun since dots can have attributes, come back after environments are done
-  code
+  .cstr_repair_attributes(x, code, ...)
 }

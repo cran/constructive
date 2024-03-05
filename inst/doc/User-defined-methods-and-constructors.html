@@ -385,7 +385,7 @@ attempts to match its data input to a list of objects provided to the
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;         return(data_name)</span></span>
 <span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt;     UseMethod(&quot;.cstr_construct&quot;)</span></span>
 <span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x12ee44ae0&gt;</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x1466e00f8&gt;</span></span>
 <span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span>
 <span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">.cstr_construct</span>(letters)</span>
 <span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; [1] &quot;c(&quot;                                                                                                        </span></span>
@@ -441,7 +441,7 @@ method.</p>
 <span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  ) {</span>
 <span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="fu">.cstr_combine_errors</span>(</span>
 <span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    constructor <span class="ot">&lt;-</span> <span class="fu">.cstr_match_constructor</span>(constructor),</span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>    ellipsis<span class="sc">::</span><span class="fu">check_dots_empty</span>()</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>    rlang<span class="sc">::</span><span class="fu">check_dots_empty</span>()</span>
 <span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  )</span>
 <span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="fu">.cstr_options</span>(<span class="st">&quot;Date&quot;</span>, <span class="at">constructor =</span> constructor, <span class="at">origin =</span> origin)</span>
 <span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>}</span></code></pre></div>
@@ -525,7 +525,7 @@ contain the constructor functions.</p>
 <span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt;     }</span></span>
 <span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="co">#&gt;     repair_attributes_Date(x, code, ...)</span></span>
 <span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x12dfbb8a0&gt;</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x1313d8208&gt;</span></span>
 <span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span></code></pre></div>
 <p>A function call is made of a function and its arguments. A
 constructor sets the function and constructs its arguments recursively.
@@ -589,7 +589,7 @@ need to dive deeper in this vignette.</p>
 <span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; {</span></span>
 <span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt;     .cstr_repair_attributes(x, code, ..., idiomatic_class = &quot;Date&quot;)</span></span>
 <span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x1380e9820&gt;</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x1300be2e8&gt;</span></span>
 <span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span>
 <span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a></span>
 <span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>constructive<span class="sc">:::</span>repair_attributes_factor</span>
@@ -598,7 +598,7 @@ need to dive deeper in this vignette.</p>
 <span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt;     .cstr_repair_attributes(x, code, ..., ignore = &quot;levels&quot;, </span></span>
 <span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt;         idiomatic_class = &quot;factor&quot;)</span></span>
 <span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x12d13a098&gt;</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x130808208&gt;</span></span>
 <span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span></code></pre></div>
 </div>
 <div id="register-a-new-class" class="section level2">

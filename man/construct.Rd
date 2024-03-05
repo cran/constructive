@@ -59,6 +59,13 @@ An object of class 'constructive'.
 \code{construct()} builds the code to reproduce one object, \code{construct_multi()}
 builds the code to reproduce objects stored in a named list or environment.
 }
+\details{
+\code{construct_multi()} recognizes promises, this means that for instance
+\code{construct_multi(environment())} can be called in a
+function and will construct unevaluated arguments using \code{delayedAssign()}.
+Note however that \code{construct_multi(environment())} is equivalent to \code{construct_reprex()}
+called without argument and the latter is preferred.
+}
 \examples{
 construct(head(cars))
 construct(head(cars), opts_data.frame("read.table"))
@@ -86,7 +93,7 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_environment]{opts_environment}(constructor = c(".env", "list2env", "as.environment", "new.env", "topenv", "new_environment"), ..., recurse = FALSE, predefine = FALSE)}
   \item \code{\link[=opts_externalptr]{opts_externalptr}(constructor = c("default"), ...)}
   \item \code{\link[=opts_factor]{opts_factor}(constructor = c("factor", "as_factor", "new_factor", "next", "atomic"), ...)}
-  \item \code{\link[=opts_formula]{opts_formula}(constructor = c("~", "formula", "as.formula", "new_formula"), ..., environment = TRUE)}
+  \item \code{\link[=opts_formula]{opts_formula}(constructor = c("~", "formula", "as.formula", "new_formula", "next"), ..., environment = TRUE)}
   \item \code{\link[=opts_function]{opts_function}(constructor = c("function", "as.function", "new_function"), ..., environment = TRUE, srcref = FALSE, trim = NULL)}
   \item \code{\link[=opts_grouped_df]{opts_grouped_df}(constructor = c("default", "next", "list"), ...)}
   \item \code{\link[=opts_language]{opts_language}(constructor = c("default"), ...)}

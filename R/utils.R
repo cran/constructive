@@ -239,13 +239,28 @@ compare_proxy_ggplot <- function(x, path) {
 }
 
 equivalent_ggplot <- function(x, y) {
+  # ggplot_table triggers a blank plot that can't be silenced so we divert it
+  # not sure if pdf() is the most efficient
+  pdf(tempfile(fileext = ".pdf"))
   x_tbl <- suppressWarnings(ggplot2::ggplot_gtable(ggplot2::ggplot_build(x)))
   y_tbl <- suppressWarnings(ggplot2::ggplot_gtable(ggplot2::ggplot_build(y)))
+  dev.off()
+  # we could probably do a better index equivalency check than just scrubbing
+  # them off, but I haven't figured out how it works
   x_unlisted <- gsub("\\d+", "XXX", unlist(x_tbl))
   y_unlisted <- gsub("\\d+", "XXX", unlist(y_tbl))
   names(x_unlisted) <- gsub("\\d+", "XXX", names(x_tbl))
   names(y_unlisted) <- gsub("\\d+", "XXX", names(y_tbl))
   identical(x_unlisted, y_unlisted)
+}
+
+expect_faithful_ggplot_construction <- function(p, ...) {
+  tt <- Sys.getenv("TESTTHAT")
+  Sys.setenv(TESTTHAT = "false")
+  on.exit(Sys.setenv(TESTTHAT = tt))
+  code <- construct(p, check = FALSE, ...)$code
+  reconstructed <- eval(parse(text = code))
+  testthat::expect_true(equivalent_ggplot(p, reconstructed))
 }
 
 keep_only_non_defaults <- function(x, f) {
@@ -301,8 +316,8 @@ split_by_line <- function(x) {
 
 # evaluate default values in the function's namespace
 # fun, pkg: strings
-defaults_arg_values <- function(fun, pkg) {
-  args_lng <- head(as.list(getFromNamespace(fun, pkg)), -1)
+defaults_arg_values <- function(fun_val, pkg) {
+  args_lng <- head(as.list(fun_val), -1)
   defaults_lng <- Filter(function(x) !identical(x, quote(expr=)), args_lng)
   lapply(defaults_lng, eval, asNamespace(pkg))
 }

@@ -31,7 +31,7 @@ construct(letters)
 #    ) {
 #    .cstr_combine_errors(
 #      constructor <- .cstr_match_constructor(constructor),
-#      ellipsis::check_dots_empty()
+#      rlang::check_dots_empty()
 #    )
 #    .cstr_options("Date", constructor = constructor, origin = origin)
 #  }

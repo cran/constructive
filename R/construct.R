@@ -3,6 +3,12 @@
 #' `construct()` builds the code to reproduce one object, `construct_multi()`
 #' builds the code to reproduce objects stored in a named list or environment.
 #'
+#' `construct_multi()` recognizes promises, this means that for instance
+#'   `construct_multi(environment())` can be called in a
+#'  function and will construct unevaluated arguments using `delayedAssign()`.
+#'  Note however that `construct_multi(environment())` is equivalent to `construct_reprex()`
+#'  called without argument and the latter is preferred.
+#'
 #' @param x An object, for `construct_multi()` a named list or an environment.
 #'
 #' @param data Named list or environment of objects we want to detect and mention by name (as opposed to
@@ -42,7 +48,7 @@ construct <- function(x, ..., data = NULL, pipe = NULL, check = NULL,
   .cstr_combine_errors(
     # force so we might fail outside of the try_fetch() when x is not properly provided
     force(x),
-    ellipsis::check_dots_unnamed(),
+    check_dots_unnamed(),
     abort_wrong_data(data),
     abort_not_boolean(one_liner)
   )
@@ -74,15 +80,48 @@ construct_multi <- function(x, ..., data = NULL, pipe = NULL, check = NULL,
                             compare = compare_options(), one_liner = FALSE,
                             template = getOption("constructive_opts_template")) {
   abort_not_env_or_named_list(x)
-  if (is.environment(x)) x <- env2list(x)
   data <- process_data(data)
-  constructives <- lapply(
-    x, construct,  ...,
-    data = data, pipe = pipe, check = check,
-    compare = compare,
-    one_liner = one_liner,
-    template = template
-  )
+
+  if (is.list(x)) {
+    constructives <- lapply(
+      x, construct,  ...,
+      data = data, pipe = pipe, check = check,
+      compare = compare,
+      one_liner = one_liner,
+      template = template
+    )
+  } else if (is.environment(x)) {
+    constructives <- list()
+    for (nm in names(x)) {
+      if (is_promise(as.symbol(nm), x)) {
+        code <- do.call(substitute, list(as.name(nm), x))
+        env <- promise_env(as.symbol(nm), x)
+        code <- .cstr_apply(
+          list(
+            .cstr_construct(nm),
+            value = deparse_call(code, style = FALSE),
+            eval.env = .cstr_construct(env)
+          ),
+          "delayedAssign",
+          recurse = FALSE
+        )
+        # FIXME: we don't collect issues yet here
+        constructives[[nm]] <- new_constructive(code, NULL)
+      } else {
+        constructives[[nm]] <- construct(
+          x[[nm]],
+          ...,
+          data = data, pipe = pipe, check = check,
+          compare = compare,
+          one_liner = one_liner,
+          template = template
+        )
+      }
+    }
+  } else {
+    abort("wrong input!")
+  }
+
   code <- lapply(constructives, `[[`, "code")
   issues <- lapply(constructives, `[[`, "compare")
   issues <- Filter(Negate(is.null), issues)
@@ -90,6 +129,7 @@ construct_multi <- function(x, ..., data = NULL, pipe = NULL, check = NULL,
   code <-  Map(
     code, names(code),
     f = function(x, y) {
+      if (startsWith(x[[1]], "delayedAssign(")) return(x)
       x[[1]] <- paste(protect(y), "<-", x[[1]])
       c(x, "")
     })
@@ -101,10 +141,36 @@ construct_multi <- function(x, ..., data = NULL, pipe = NULL, check = NULL,
 }
 
 #' @export
-print.constructive <- function(x, ...) {
-  print(x$code)
+print.constructive <- function(
+    x,
+    print_mode = getOption("constructive_print_mode", default = "console"),
+    ...) {
+  print_mode <- arg_match(
+    print_mode,
+    values = c("console", "script", "reprex", "clipboard"),
+    multiple = TRUE
+  )
+
+  if ("console" %in% print_mode) {
+    print(x$code)
+  }
+  if ("reprex" %in% print_mode) {
+    check_installed("reprex")
+    reprex_code <- c("reprex::reprex({", x$code, "})")
+    eval.parent(parse(text = reprex_code))
+  }
+  if ("clipboard" %in% print_mode) {
+    check_installed("clipr")
+    clipr::write_clip(paste(x$code, collapse = "\n"), "character")
+  }
+  if ("script" %in% print_mode) {
+    check_installed("rstudioapi")
+    rstudioapi::documentNew(x$code, "r")
+  }
   invisible(x)
 }
+
+
 
 # this is  styler:::print.vertical with small tweaks:
 # * different default for `colored`
