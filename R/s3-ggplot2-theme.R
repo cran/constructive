@@ -1,5 +1,31 @@
 #' @export
+#' @rdname other-opts
+opts_theme <- function(constructor = c("theme", "next", "list"), ...) {
+  .cstr_options("theme", constructor = constructor[[1]], ...)
+}
+
+#' @export
+#' @method .cstr_construct theme
 .cstr_construct.theme <- function(x, ...) {
+  opts <- list(...)$opts$theme %||% opts_theme()
+  if (is_corrupted_theme(x) || opts$constructor == "next") return(NextMethod())
+  UseMethod(".cstr_construct.theme", structure(NA, class = opts$constructor))
+}
+
+is_corrupted_theme <- function(x) {
+  # TODO
+  FALSE
+}
+
+#' @export
+#' @method .cstr_construct.theme list
+.cstr_construct.theme.list <- function(x, ...) {
+  .cstr_construct.list(x, ...)
+}
+
+#' @export
+#' @method .cstr_construct.theme theme
+.cstr_construct.theme.theme <- function(x, ...) {
   args <- unclass(x)
   args$complete <- if (attr(x, "complete")) TRUE
   args$validate <- if (!attr(x, "validate")) FALSE
@@ -8,6 +34,10 @@
     if (!is.null(code)) return(code)
   }
   .cstr_apply(args, "ggplot2::theme", ...)
+}
+
+repair_attributes_theme <- function(x, ...) {
+  .cstr_repair_attributes(x, idiomatic_class = c("theme", "gg"), ...)
 }
 
 strip_theme <- function(x) {
@@ -20,6 +50,8 @@ strip_theme <- function(x) {
   x$line$linewidth <- NULL
 
   # these will mostly be set through the base_size arg
+  x$margins <- NULL
+  x$spacing <- NULL
   x$axis.title.x$margin <- NULL
   x$axis.title.x.top$margin <- NULL
   x$axis.title.y$margin <- NULL
@@ -77,118 +109,9 @@ guess_complete_theme <- function(x, ...) {
   }
   NULL
 }
+
 repair_attributes_theme <- function(x, ...) {
   ignore <- c("complete", "validate")
   if (identical(names(x), character())) ignore <- c(ignore, "names")
   .cstr_repair_attributes(x, idiomatic_class = c("theme", "gg"), ignore = ignore, ...)
-}
-
-#' @export
-.cstr_construct.element_blank <- function(x, ...) {
-  code <- "ggplot2::element_blank()"
-  repair_attributes_element_blank(x, code, ...)
-}
-
-repair_attributes_element_blank <- function(x, ...) {
-  .cstr_repair_attributes(x, idiomatic_class = c("element_blank", "element"), ...)
-}
-
-#' @export
-.cstr_construct.element_grob <- function(x, ...) {
-  args <- keep_only_non_defaults(unclass(x), ggplot2::element_grob)
-  code <- .cstr_apply(args, "ggplot2::element_grob", ...)
-  repair_attributes_element_grob(x, code, ...)
-}
-
-repair_attributes_element_grob <- function(x, ...) {
-  .cstr_repair_attributes(x, idiomatic_class = c("element_grob", "element"), ...)
-}
-
-#' @export
-.cstr_construct.element_rect <- function(x, ...) {
-  args <- keep_only_non_defaults(unclass(x), ggplot2::element_rect)
-  code <- .cstr_apply(args, "ggplot2::element_rect", ...)
-  repair_attributes_element_rect(x, code, ...)
-}
-
-repair_attributes_element_rect <- function(x, ...) {
-  .cstr_repair_attributes(x, idiomatic_class = c("element_rect", "element"), ...)
-}
-
-#' @export
-.cstr_construct.element_render <- function(x, ...) {
-  args <- keep_only_non_defaults(unclass(x), ggplot2::element_render)
-  code <- .cstr_apply(args, "ggplot2::element_render", ...)
-  repair_attributes_element_render(x, code, ...)
-}
-
-repair_attributes_element_render <- function(x, ...) {
-  .cstr_repair_attributes(x, idiomatic_class = c("element_render", "element"), ...)
-}
-
-#' @export
-.cstr_construct.element_text <- function(x, ...) {
-  args <- keep_only_non_defaults(unclass(x), ggplot2::element_text)
-  code <- .cstr_apply(args, "ggplot2::element_text", ...)
-  repair_attributes_element_text(x, code, ...)
-}
-
-repair_attributes_element_text <- function(x, ...) {
-  .cstr_repair_attributes(x, idiomatic_class = c("element_text", "element"), ...)
-}
-
-#' @export
-.cstr_construct.element_line <- function(x, ...) {
-  args <- keep_only_non_defaults(unclass(x), ggplot2::element_line)
-  .cstr_apply(args, "ggplot2::element_line", ...)
-}
-
-repair_attributes_element_line <- function(x, ...) {
-  .cstr_repair_attributes(x, idiomatic_class = c("element_line", "element"), ...)
-}
-
-#' @export
-.cstr_construct.simpleUnit <- function(x, ...) {
-  lkp <- c(
-    npc = 0L, cm = 1L, inches = 2L, mm = 7L, points = 8L, picas = 9L,
-    bigpts = 10L, dida = 11L, cicero = 12L, scaledpts = 13L, lines = 3L,
-    char = 18L, native = 4L, snpc = 6L, mylines = 103L, mychar = 104L,
-    mystrwidth = 105L, mystrheight = 106L
-  )
-  units <- names(lkp)[match(attr(x, "unit"), lkp)]
-  x <- as.vector(x)
-  code <- .cstr_apply(list(x, units = units), "grid::unit", ...)
-  repair_attributes_simpleUnit(x, code, ...)
-}
-
-repair_attributes_simpleUnit <- function(x, ...) {
-  .cstr_repair_attributes(x, idiomatic_class = c("simpleUnit", "unit", "unit_v2"), ignore = "unit", ...)
-}
-
-#' @export
-.cstr_construct.margin <- function(x, ...) {
-  lkp <- c(
-    npc = 0L, cm = 1L, inches = 2L, mm = 7L, points = 8L, picas = 9L,
-    bigpts = 10L, dida = 11L, cicero = 12L, scaledpts = 13L, lines = 3L,
-    char = 18L, native = 4L, snpc = 6L, mylines = 103L, mychar = 104L,
-    mystrwidth = 105L, mystrheight = 106L
-  )
-  unit <- names(lkp)[match(attr(x, "unit"), lkp)]
-  x <- as.vector(x)
-  code <- .cstr_apply(list(t = x[1], r = x[2], b = x[3], l = x[4], unit = unit), "ggplot2::margin", ...)
-  repair_attributes_margin(x, code, ...)
-}
-
-repair_attributes_margin <- function(x, ...) {
-  .cstr_repair_attributes(x, idiomatic_class = c("margin", "simpleUnit", "unit", "unit_v2"), ignore = "unit", ...)
-}
-
-#' @export
-.cstr_construct.rel <- function(x, ...) {
-  code <- .cstr_apply(list(unclass(x)), "ggplot2::rel", ...)
-  repair_attributes_rel(x, code, ...)
-}
-
-repair_attributes_rel <- function(x, ...) {
-  .cstr_repair_attributes(x, idiomatic_class = "rel", ...)
 }

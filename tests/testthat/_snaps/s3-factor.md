@@ -13,7 +13,7 @@
           class = "factor"
         )
     Code
-      construct(factor(month.abb), opts_factor("atomic"))
+      construct(factor(month.abb), opts_factor("integer"))
     Output
       c(5L, 4L, 8L, 1L, 9L, 7L, 6L, 2L, 12L, 11L, 10L, 3L) |>
         structure(
@@ -59,9 +59,6 @@
       )
     Code
       construct(factor(c(a = "foo")))
-    Message
-      {constructive} couldn't create code that reproduces perfectly the input
-      i Call `construct_issues()` to inspect the last issues
     Output
-      factor("foo")
+      factor(c(a = "foo"))
 

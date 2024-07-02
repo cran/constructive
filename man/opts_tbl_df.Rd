@@ -7,16 +7,19 @@
 opts_tbl_df(
   constructor = c("tibble", "tribble", "next", "list"),
   ...,
-  trailing_comma = TRUE
+  trailing_comma = TRUE,
+  justify = c("left", "right", "centre", "none")
 )
 }
 \arguments{
-\item{constructor}{String. Name of the function used to construct the environment, see Details section.}
+\item{constructor}{String. Name of the function used to construct the object, see Details section.}
 
-\item{...}{Should not be used. Forces passing arguments by name.}
+\item{...}{Additional options used by user defined constructors through the \code{opts} object}
 
-\item{trailing_comma}{Boolean, whether to leave a trailing comma at the end of the constructor call
+\item{trailing_comma}{Boolean. Whether to leave a trailing comma at the end of the constructor call
 calls}
+
+\item{justify}{String. Justification for columns if \code{constructor} is \code{"tribble"}}
 }
 \value{
 An object of class <constructive_options/constructive_options_tbl_df>

@@ -26,9 +26,16 @@
 }
 
 # "c(1,2)" to "foo = c(1,2),"
-name_and_append_comma <- function(x, nm, implicit_names = FALSE) {
+name_and_append_comma <- function(
+    x,
+    nm,
+    implicit_names = FALSE,
+    unicode_representation = c("ascii", "latin", "character", "unicode"),
+    escape = FALSE) {
+  unicode_representation <- match.arg(unicode_representation)
   if (nm != "" && (!implicit_names || !identical(nm, x))) {
-    x[1] <- paste(protect(nm), "=", x[1])
+    nm <- construct_string(nm, unicode_representation, escape, mode = "name")
+    x[1] <- paste(nm, "=", x[1])
   }
   x[length(x)] <- paste0(x[length(x)], ",")
   x
@@ -44,15 +51,17 @@ name_and_append_comma <- function(x, nm, implicit_names = FALSE) {
 #' @param one_liner A boolean. Whether to paste `x`, the pipe and `y` together
 #' @param indent A boolean. Whether to indent `y`
 #' on a same line (provided that `x` and `y` are strings and one liners themselves)
+#' @param ... Implemented to collect unused arguments forwarded by the dots of the
+#'   caller environment.
 #'
 #' @return A character vector
 #' @export
 #' @examples
 #' .cstr_pipe("iris", "head(2)", pipe = "magrittr", one_liner = FALSE)
 #' .cstr_pipe("iris", "head(2)", pipe = "magrittr", one_liner = TRUE)
-.cstr_pipe <- function(x, y, pipe, one_liner, indent = TRUE) {
+.cstr_pipe <- function(x, y, ..., pipe = NULL, one_liner = FALSE, indent = TRUE) {
   if (is.null(pipe)) {
-    if (getRversion() >= "4.2") {
+    if (with_versions(R >= "4.2.0")) {
       pipe <- "base"
     } else {
       pipe <- "magrittr"
@@ -72,7 +81,7 @@ name_and_append_comma <- function(x, nm, implicit_names = FALSE) {
 
 arg_match_pipe <- function(pipe, allow_plus = FALSE) {
   if (is.null(pipe)) {
-    if (getRversion() >= "4.2") {
+    if (with_versions(R >= "4.2.0")) {
       pipe <- "base"
     } else {
       pipe <- "magrittr"
@@ -169,10 +178,11 @@ scrub_ggplot <- function(x) {
 
 # Thanks to Zi Lin : https://stackoverflow.com/questions/75960769
 flatten.scales <- function(gg) {
+  `$` <- base::`$`
   # take stock how many different scales are contained within the top-level
   # scale list, & sort their names alphabetically for consistency
-  orig.scales <- gg[["scales"]]
-  scale.count <- orig.scales$n()
+  orig.scales <-gg[["scales"]]
+  scale.count <-  orig.scales$n()
   scale.aesthetics <- lapply(seq_len(scale.count),
                              function(i) orig.scales$scales[[i]]$aesthetics)
   names(scale.aesthetics) <- lapply(scale.aesthetics,
@@ -300,7 +310,17 @@ with_versions <- function(expr, lib.loc = NULL) {
   names(versions) <- vars[keep]
   R <- R.Version()
   R <- as.package_version(sprintf("%s.%s", R$major, R$minor))
-  eval(expr, envir = c(list(R = R), versions), enclos = parent.frame())
+  mask <- c(
+    list(R = R),
+    versions,
+    `==` = base::`==`,
+    `!=` = base::`!=`,
+    `>=` = base::`>=`,
+    `>` = base::`>`,
+    `<=` = base::`<=`,
+    `<` = base::`<`
+  )
+  eval(expr, envir = mask, enclos = parent.frame())
 }
 
 indent <- function(x, depth = 1) {
@@ -327,4 +347,38 @@ highlight_if_prettycode_installed <- function(x, style = NULL) {
     return(x)
   }
   prettycode::highlight(x, style = style %||% prettycode::default_style())
+}
+
+strip <- function(x) {
+  attributes(x) <- attributes(x)["names"]
+  x
+}
+
+# note: system("locale charmap") gives the system encoding on unix but not sure
+# about windows
+native_encoding <- function() {
+  out <- sub("^.*\\.([^.]+)$", "\\1", Sys.getlocale("LC_CTYPE"))
+  if (out == "ISO8859-1") out <- "latin1"
+  out
+}
+
+is_na_real <- function(x) {
+  is.na(x) & !is.nan(x)
+}
+
+names_need_repair <- function(nms, c_names = TRUE) {
+  !is.null(nms) && (
+    anyNA(nms) ||
+      all(nms == "")  ||
+      !is.null(attributes(nms)) ||
+      (c_names && any(c("recursive", "use.names") %in% nms))
+  )
+}
+
+user_env <- function() {
+  envs <- sys.frames()
+  ns <- topenv()
+  i <- Position(function(x) identical(topenv(x), ns), envs)
+  # sys.frames() doesn't contain .GlobalEnv
+  parent.frame(length(envs) - i + 1)
 }

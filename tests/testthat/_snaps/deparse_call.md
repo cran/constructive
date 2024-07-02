@@ -69,6 +69,10 @@
     Output
       [1] "`$`()"
     Code
+      deparse_call(call("$"), style = FALSE)
+    Output
+      [1] "`$`()"
+    Code
       deparse_call(call(":", 1, 2, 3), style = FALSE)
     Output
       [1] "`:`(1, 2, 3)"
@@ -285,6 +289,29 @@
 ---
 
     Code
+      deparse_call(quote(list(x = 1)))
+    Output
+      list(x = 1)
+    Code
+      deparse_call(quote((x = 1)))
+    Output
+      (x = 1)
+    Code
+      deparse_call(quote(list(x = 1)))
+    Output
+      list(x = 1)
+    Code
+      deparse_call(quote({
+        x = 1
+      }))
+    Output
+      {
+        x = 1
+      }
+
+---
+
+    Code
       deparse_call(quote({{ x }}), style = FALSE)
     Output
       [1] "{{ x }}"
@@ -320,4 +347,73 @@
       deparse_call("ü", unicode_representation = "latin")
     Output
       "ü"
+
+---
+
+    Code
+      deparse_call(quote((x <- 1) <- 2))
+    Output
+      (x <- 1) <- 2
+    Code
+      deparse_call(quote(if (TRUE) 1 <- 1))
+    Output
+      if (TRUE) 1 <- 1
+    Code
+      deparse_call(quote(for (i in j) 1 <- 1))
+    Output
+      for (i in j) 1 <- 1
+    Code
+      deparse_call(quote(while (TRUE) 1 <- 1))
+    Output
+      while (TRUE) 1 <- 1
+    Code
+      deparse_call(quote(repeat 1 <- 1))
+    Output
+      repeat 1 <- 1
+
+---
+
+    Code
+      construct(quote((a + b)^c))
+    Output
+      quote((a + b)^c)
+    Code
+      construct(quote(a^b + c))
+    Output
+      quote(a^b + c)
+    Code
+      construct(quote((a * b) %in% c))
+    Output
+      quote((a * b) %in% c)
+    Code
+      construct(quote(a %in% b * c))
+    Output
+      quote(a %in% b * c)
+    Code
+      construct(quote(1 + 2 + 4))
+    Output
+      quote(1 + 2 + 4)
+    Code
+      construct(quote(-1 + 2))
+    Output
+      quote(-1 + 2)
+    Code
+      construct(quote((1 <<- 2) <- 4))
+    Output
+      quote((1 <<- 2) <- 4)
+    Code
+      construct(quote(`+`(x, y)(z)))
+    Output
+      quote(`+`(x, y)(z))
+
+# deparse_call() for R >= 4.1
+
+    Code
+      deparse_call(quote(`🐶`), style = FALSE)
+    Output
+      [1] "`\\xf0\\x9f\\x90\\xb6`"
+    Code
+      deparse_call(quote(`🐶`), unicode_representation = "unicode")
+    Output
+      `🐶`
 

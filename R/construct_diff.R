@@ -1,5 +1,8 @@
 #' Display diff of object definitions
 #'
+#' This calls `construct()` on two objects and compares the output using
+#' `diffobj::diffChr()`.
+#'
 #' @inheritParams construct
 #' @inheritParams diffobj::diffChr
 #' @param mode,interactive passed to `diffobj::diffChr()`
@@ -32,9 +35,17 @@
 #' construct_diff(x, y)
 #' }
 construct_diff <- function(
-    target, current, ..., data = NULL, pipe = NULL, check = TRUE,
-    compare = compare_options(), one_liner = FALSE,
-    template = getOption("constructive_opts_template"), mode = c("sidebyside", "auto", "unified", "context"), interactive = TRUE) {
+    target,
+    current, ...,
+    data = NULL,
+    pipe = NULL,
+    check = TRUE,
+    compare = compare_options(),
+    one_liner = FALSE,
+    template = getOption("constructive_opts_template"),
+    classes = NULL,
+    mode = c("sidebyside", "auto", "unified", "context"),
+    interactive = TRUE) {
   mode <- match.arg(mode)
   tar.banner <- format_call_for_diffobj_banner(substitute(target), interactive = interactive)
   cur.banner <- format_call_for_diffobj_banner(substitute(current), interactive = interactive)
@@ -50,7 +61,8 @@ construct_diff <- function(
     check = check,
     compare = compare,
     one_liner = one_liner,
-    template = template
+    template = template,
+    classes = classes
     )$code
   current_code <- construct(
     current,
@@ -60,7 +72,8 @@ construct_diff <- function(
     check = check,
     compare = compare,
     one_liner = one_liner,
-    template = template
+    template = template,
+    classes = classes
   )$code
   f <- tempfile(fileext = ".html")
   diffobj::diffChr(

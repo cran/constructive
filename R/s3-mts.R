@@ -1,40 +1,37 @@
-constructors$mts <- new.env()
-
 #' Constructive options for time-series objets
 #'
-#' Depending on `constructor`, we construct the environment as follows:
+#' Depending on `constructor`, we construct the object as follows:
 #' * `"ts"` : We use `ts()`
 #' * `"next"` : Use the constructor for the next supported class. Call `.class2()`
 #'   on the object to see in which order the methods will be tried. This will usually
 #'   be equivalent to `"atomic"`
 #' * `"atomic"` : We define as an atomic vector and repair attributes
 #'
-#' @param constructor String. Name of the function used to construct the environment.
+#' @param constructor String. Name of the function used to construct the object.
 #' @inheritParams opts_atomic
 #'
-#' @return An object of class <constructive_options/constructive_options_environment>
+#' @return An object of class <constructive_options/constructive_options_mts>
 #' @export
 opts_mts  <- function(constructor = c("ts", "next", "atomic"), ...) {
-  .cstr_combine_errors(
-    constructor <- .cstr_match_constructor(constructor, "mts"),
-    check_dots_empty()
-  )
-  .cstr_options("mts", constructor = constructor)
+  .cstr_options("mts", constructor = constructor[[1]], ...)
 }
 
 #' @export
+#' @method .cstr_construct mts
 .cstr_construct.mts <- function(x, ...) {
-  opts <- .cstr_fetch_opts("mts", ...)
+  opts <- list(...)$opts$mts %||% opts_mts()
   if (is_corrupted_mts(x) || opts$constructor == "next") return(NextMethod())
-  constructors$mts[[opts$constructor]](x, ...)
+  UseMethod(".cstr_construct.mts", structure(NA, class = opts$constructor))
 }
 
 is_corrupted_mts <- function(x) {
   # TODO
-  FALSE
+  !typeof(x) %in% c("integer", "double")
 }
 
-constructors$mts$ts <- function(x, ...) {
+#' @export
+#' @method .cstr_construct.mts ts
+.cstr_construct.mts.ts <- function(x, ...) {
   x_stripped <- x
   tsp <- attr(x, "tsp")
   attr(x_stripped, "tsp") <- NULL
@@ -42,8 +39,10 @@ constructors$mts$ts <- function(x, ...) {
   .cstr_apply(list(x_stripped, frequency =  tail(tsp, 1), start = tsp[[1]]), "ts", ..., new_line = TRUE)
 }
 
-constructors$mts$atomic <- function(x, ...) {
-  .cstr_construct.atomic(x, ...)
+#' @export
+#' @method .cstr_construct.mts atomic
+.cstr_construct.mts.atomic <- function(x, ...) {
+  .cstr_construct.default(x, ...)
 }
 
 repair_attributes_mts <- function(x, code, ..., pipe = NULL) {

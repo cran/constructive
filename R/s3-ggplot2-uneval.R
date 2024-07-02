@@ -3,7 +3,33 @@
 # eval the expressions or components
 
 #' @export
+#' @rdname other-opts
+opts_uneval <- function(constructor = c("aes", "next", "list"), ...) {
+  .cstr_options("uneval", constructor = constructor[[1]], ...)
+}
+
+#' @export
+#' @method .cstr_construct uneval
 .cstr_construct.uneval <- function(x, ...) {
+  opts <- list(...)$opts$uneval %||% opts_uneval()
+  if (is_corrupted_uneval(x) || opts$constructor == "next") return(NextMethod())
+  UseMethod(".cstr_construct.uneval", structure(NA, class = opts$constructor))
+}
+
+#' @export
+#' @method .cstr_construct.uneval list
+.cstr_construct.uneval.list <- function(x, ...) {
+  .cstr_construct.list(x, ...)
+}
+
+#' @export
+#' @method .cstr_construct.uneval aes
+.cstr_construct.uneval.aes <- function(x, ...) {
+  if (!length(x)) {
+    return(
+      repair_attributes_uneval(x, "ggplot2::aes()", ...)
+    )
+  }
   args <- lapply(x, function(x) rlang::expr_deparse(rlang::quo_squash(x)))
   nm1 <- names(args)[1]
   # omit `x` and `y` if provided in this order
@@ -16,6 +42,11 @@
   }
   code <- .cstr_apply(args, fun = "ggplot2::aes", recurse = FALSE, new_line = FALSE)
   repair_attributes_uneval(x, code, ...)
+}
+
+is_corrupted_uneval <- function(x) {
+  # TODO
+  FALSE
 }
 
 repair_attributes_uneval <- function(x, code, pipe = NULL, ...) {

@@ -4,22 +4,22 @@
 \alias{opts_matrix}
 \title{Constructive options for matrices}
 \usage{
-opts_matrix(constructor = c("matrix", "array", "next", "atomic"), ...)
+opts_matrix(constructor = c("matrix", "array", "next"), ...)
 }
 \arguments{
-\item{constructor}{String. Name of the function used to construct the environment.}
+\item{constructor}{String. Name of the function used to construct the object.}
 
-\item{...}{Should not be used. Forces passing arguments by name.}
+\item{...}{Additional options used by user defined constructors through the \code{opts} object}
 }
 \value{
-An object of class <constructive_options/constructive_options_environment>
+An object of class <constructive_options/constructive_options_matrix>
 }
 \description{
 Matrices are atomic vectors, lists, or objects of type \code{"expression"} with a \code{"dim"}
 attributes of length 2.
 }
 \details{
-Depending on \code{constructor}, we construct the environment as follows:
+Depending on \code{constructor}, we construct the object as follows:
 \itemize{
 \item \code{"matrix"} : We use \code{matrix()}
 \item \code{"array"} : We use \code{array()}

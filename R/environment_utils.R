@@ -10,6 +10,24 @@ construct_special_env <- function(x) {
   if (identical(Sys.getenv("TESTTHAT"), "true") && name == "constructive") return('asNamespace("constructive")')
   if (name != "" && rlang::is_installed(name) && identical(x, asNamespace(name))) return(sprintf('asNamespace("%s")', name))
   if (name %in% search() && identical(x, as.environment(name))) return(sprintf('as.environment("%s")', name))
+  if (startsWith(name, "imports:")) {
+    pkg <- sub("^imports:(.*)$", "\\1", name)
+    env_is_imports <-
+      pkg != "" &&
+      rlang::is_installed(pkg) &&
+      identical(x, parent.env(asNamespace(pkg)))
+    if (env_is_imports)
+      return(sprintf('parent.env(asNamespace("%s"))', pkg))
+  }
+  if (startsWith(name, "lazydata:")) {
+    pkg <- sub("^lazydata:(.*)$", "\\1", name)
+    env_is_lazydata <-
+      pkg != "" &&
+      rlang::is_installed(pkg) &&
+      identical(x, getNamespaceInfo(pkg, "lazydata"))
+    if (env_is_lazydata)
+      return(sprintf('getNamespaceInfo("%s", "lazydata")', pkg))
+  }
 }
 
 env_memory_address <- function(x, by_name = FALSE) {
@@ -56,7 +74,8 @@ fetch_parent_names <- function(x) {
 #'
 #' This is designed to be used in constructed output. The `parents` and `...` arguments
 #'  are not processed and only used to display additional information. If used on
-#'  an improper memory address the output might be erratic or the session might crash.
+#'  an improper memory address it will either fail (most likely) or the output
+#'  will be erratic.
 #'
 #' @param address Memory address of the environment
 #' @param parents,... ignored
@@ -89,8 +108,7 @@ update_predefinition <- function(envir, ...) {
   globals$envs <- rbind(globals$envs, data.frame(hash = hash, name = env_name))
   # initialize with new.env(), repairing attributes
   code <- sprintf("new.env(parent = %s)", parent_code)
-  # hack: we use  opts_environment(predefine = FALSE) to switch on attribute reparation just there
-  code <- repair_attributes_environment(envir, code, opts_environment(predefine = FALSE), ...)
+  code <- repair_attributes_environment(envir, code, ...)
   code[[1]] <- sprintf("%s <- %s", env_name, code[[1]])
   # update predefinitions with envir definition
   globals$predefinition <- c(
@@ -137,4 +155,61 @@ update_predefinition <- function(envir, ...) {
     }
   }
   env_name
+}
+
+apply_env_locks <- function(x, code, ...) {
+  locked_bindings <- rlang::env_binding_are_locked(x)
+  if (environmentIsLocked(x)) {
+    if (length(locked_bindings) && all(locked_bindings)) {
+      rhs <- c(
+        "(\\(e) {",
+        "  lockEnvironment(e, bindings = TRUE)",
+        "  e",
+        "})()"
+      )
+      code <- .cstr_pipe(code, rhs)
+      return(code)
+    }
+    if (!any(locked_bindings)) {
+      rhs <- c(
+        "(\\(e) {",
+        "  lockEnvironment(e)",
+        "  e",
+        "})()"
+      )
+      code <- .cstr_pipe(code, rhs)
+      return(code)
+    }
+    rhs <- c(
+      '(\\(e) {',
+      "  lockEnvironment(e)",
+      locked_code(locked_bindings, ...),
+      '  e',
+      '})()'
+    )
+    code <- .cstr_pipe(code, rhs)
+    return(code)
+  }
+  if (any(locked_bindings)) {
+    rhs <- c(
+      '(\\(e) {',
+      locked_code(locked_bindings, ...),
+      '  e',
+      '})()'
+    )
+    code <- .cstr_pipe(code, rhs)
+  }
+  code
+}
+
+locked_code <- function(locked_bindings, ...) {
+  locked <- names(locked_bindings)[locked_bindings]
+  if (length(locked) > 2) {
+    locked_code <- .cstr_construct(locked, ...)
+    locked_code[[1]] <- paste("locked <- ", locked_code[[1]])
+    locked_code <- c(locked_code, 'for (sym in locked) lockBinding(sym, e)')
+    locked_code <- paste0("  ", locked_code)
+    return(locked_code)
+  }
+  sprintf("  lockBinding(%s, e)", sapply(locked, .cstr_construct, ...))
 }

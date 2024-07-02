@@ -94,7 +94,7 @@
         e <- new.env()
         e$f <- e
         foo <- evalq(~a, e)
-        construct(foo, opts_environment(predefine = TRUE), opts_formula(environment = TRUE))
+        construct(foo, opts_environment("predefine"), opts_formula(environment = TRUE))
       }, .GlobalEnv)
     Output
       ..env.1.. <- new.env(parent = .GlobalEnv)
@@ -120,13 +120,96 @@
 ---
 
     Code
-      construct(constructive::.cstr_construct, opts_environment(predefine = TRUE),
+      construct(constructive::.cstr_construct, opts_environment("predefine"),
       opts_function(environment = TRUE))
     Output
-      (function(x, ..., data = NULL) {
+      (function(x, ..., data = NULL, classes = NULL) {
         data_name <- perfect_match(x, data)
         if (!is.null(data_name)) return(data_name)
-        UseMethod(".cstr_construct")
+        if (is.null(classes)) {
+          UseMethod(".cstr_construct")
+        } else if (identical(classes, "-")) {
+          .cstr_construct.default(x, ..., classes = classes)
+        } else if (classes[[1]] == "-") {
+          cl <- setdiff(.class2(x), classes[-1])
+          UseMethod(".cstr_construct", structure(NA_integer_, class = cl))
+        } else {
+          cl <- intersect(.class2(x), classes)
+          UseMethod(".cstr_construct", structure(NA_integer_, class = cl))
+        }
       }) |>
         (`environment<-`)(asNamespace("constructive"))
+
+---
+
+    Code
+      e <- rlang::env(.GlobalEnv, a = 1, b = 2, c = 3, d = 4)
+      construct(e, check = FALSE)
+    Output
+      constructive::.env("0x123456789", parents = "global")
+    Code
+      lockEnvironment(e)
+      construct(e, check = FALSE)
+    Output
+      constructive::.env("0x123456789", parents = "global", locked = TRUE)
+    Code
+      construct(e, opts_environment("list2env"))
+    Output
+      list2env(list(a = 1, b = 2, c = 3, d = 4), parent = .GlobalEnv) |>
+        (\(e) {
+          lockEnvironment(e)
+          e
+        })()
+    Code
+      lockBinding("a", e)
+      construct(e, opts_environment("list2env"))
+    Output
+      list2env(list(a = 1, b = 2, c = 3, d = 4), parent = .GlobalEnv) |>
+        (\(e) {
+          lockEnvironment(e)
+          lockBinding("a", e)
+          e
+        })()
+    Code
+      lockBinding("b", e)
+      construct(e, opts_environment("list2env"))
+    Output
+      list2env(list(a = 1, b = 2, c = 3, d = 4), parent = .GlobalEnv) |>
+        (\(e) {
+          lockEnvironment(e)
+          lockBinding("a", e)
+          lockBinding("b", e)
+          e
+        })()
+    Code
+      lockBinding("c", e)
+      construct(e, opts_environment("list2env"))
+    Output
+      list2env(list(a = 1, b = 2, c = 3, d = 4), parent = .GlobalEnv) |>
+        (\(e) {
+          lockEnvironment(e)
+          locked <-  c("a", "b", "c")
+          for (sym in locked) lockBinding(sym, e)
+          e
+        })()
+    Code
+      lockBinding("d", e)
+      construct(e, opts_environment("list2env"))
+    Output
+      list2env(list(a = 1, b = 2, c = 3, d = 4), parent = .GlobalEnv) |>
+        (\(e) {
+          lockEnvironment(e, bindings = TRUE)
+          e
+        })()
+
+---
+
+    Code
+      construct(getNamespaceInfo("datasets", "lazydata"))
+    Output
+      getNamespaceInfo("datasets", "lazydata")
+    Code
+      construct(parent.env(asNamespace("stats")))
+    Output
+      parent.env(asNamespace("stats"))
 

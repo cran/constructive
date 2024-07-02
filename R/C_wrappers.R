@@ -4,9 +4,9 @@ NULL
 #' Build a pointer from a memory address
 #'
 #' Base R doesn't provide utilities to build or manipulate external pointers
-#' (objects of type "externalptr"), so we provide our own. Be warned that
-#' objects defined with `.xptr()` are not stable across sessions,
-#' however this is the best we can
+#' (objects of type "externalptr"), so we provide our own.
+#' Objects defined with `.xptr()` are not stable across sessions,
+#'
 #' @param address Memory address
 #' @return The external pointer (type "externalptr") that the memory address points to.
 #' @export
@@ -23,14 +23,8 @@ env_impl <- function(address) {
   .Call("objectFromAddress", PACKAGE = "constructive", address)
 }
 
-is_promise <- function(name, env = parent.frame()) {
-  .Call("is_promise", PACKAGE = "constructive", name, env)
-}
-
-promise_code <- function(name, env = parent.frame()) {
-  .Call("promise_code", PACKAGE = "constructive", name, env)
-}
-
 promise_env <- function(name, env = parent.frame()) {
-  .Call("promise_env", PACKAGE = "constructive", name, env)
+  enquo_call <- substitute(rlang::enquo(X), list(X = rlang::sym(name)))
+  quo <- eval(enquo_call, env)
+  rlang::quo_get_env(quo)
 }

@@ -1,5 +1,3 @@
-constructors$classRepresentation <- new.env()
-
 #' Constructive options for class 'classRepresentation'
 #'
 #' These options will be used on objects of class 'classRepresentation'.
@@ -9,19 +7,15 @@ constructors$classRepresentation <- new.env()
 #' @return An object of class <constructive_options/constructive_options_classRepresentation>
 #' @export
 opts_classRepresentation <- function(constructor = c("getClassDef"), ...) {
-  .cstr_combine_errors(
-    constructor <- .cstr_match_constructor(constructor, "classRepresentation"),
-    check_dots_empty()
-  )
-  .cstr_options("classRepresentation", constructor = constructor)
+  .cstr_options("classRepresentation", constructor = constructor[[1]], ...)
 }
 
 #' @export
+#' @method .cstr_construct classRepresentation
 .cstr_construct.classRepresentation <- function(x, ...) {
-  opts <- .cstr_fetch_opts("classRepresentation", ...)
+  opts <- list(...)$opts$classRepresentation %||% opts_classRepresentation()
   if (is_corrupted_classRepresentation(x) || opts$constructor == "next") return(NextMethod())
-  constructor <- constructors$classRepresentation[[opts$constructor]]
-  constructor(x, ...)
+  UseMethod(".cstr_construct.classRepresentation", structure(NA, class = opts$constructor))
 }
 
 is_corrupted_classRepresentation <- function(x) {
@@ -29,7 +23,9 @@ is_corrupted_classRepresentation <- function(x) {
   !isS4(x)
 }
 
-constructors$classRepresentation$getClassDef <- function(x, env, ...) {
+#' @export
+#' @method .cstr_construct.classRepresentation getClassDef
+.cstr_construct.classRepresentation.getClassDef <- function(x, env, ...) {
   # FIXME: what about multiple classes ? is this considered corrupted in S4 ?
   cl <- x@className
   attr(cl, "package") <- NULL

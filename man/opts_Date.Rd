@@ -6,26 +6,26 @@
 \usage{
 opts_Date(
   constructor = c("as.Date", "as_date", "date", "new_date", "as.Date.numeric",
-    "as_date.numeric", "next", "atomic"),
+    "as_date.numeric", "next", "double"),
   ...,
   origin = "1970-01-01"
 )
 }
 \arguments{
-\item{constructor}{String. Name of the function used to construct the environment.}
+\item{constructor}{String. Name of the function used to construct the object.}
 
-\item{...}{Should not be used. Forces passing arguments by name.}
+\item{...}{Additional options used by user defined constructors through the \code{opts} object}
 
 \item{origin}{Origin to be used, ignored when irrelevant.}
 }
 \value{
-An object of class <constructive_options/constructive_options_environment>
+An object of class <constructive_options/constructive_options_Date>
 }
 \description{
 These options will be used on objects of class 'date'.
 }
 \details{
-Depending on \code{constructor}, we construct the environment as follows:
+Depending on \code{constructor}, we construct the object as follows:
 \itemize{
 \item \code{"as.Date"} (default): We wrap a character vector with \code{as.Date()}, if the date
 is infinite it cannot be converted to character and we wrap a numeric vector and
@@ -41,6 +41,9 @@ provided \code{origin}
 provided \code{origin}
 \item \code{"next"} : Use the constructor for the next supported class. Call \code{.class2()}
 on the object to see in which order the methods will be tried.
-\item \code{"atomic"} : We define as an atomic vector and repair attributes
+\item \code{"double"} : We define as an double vector and repair attributes
 }
+
+If the data is not appropriate for a constructor we fall back to another one
+appropriately.
 }

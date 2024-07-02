@@ -11,14 +11,15 @@ deparse_call(
   style = TRUE,
   collapse = !style,
   unicode_representation = c("ascii", "latin", "character", "unicode"),
-  escape = FALSE
+  escape = FALSE,
+  pedantic_encoding = FALSE
 )
 }
 \arguments{
-\item{call}{A call}
+\item{call}{A call.}
 
 \item{one_liner}{Boolean. Whether to collapse multi-line expressions on a single line using
-semicolons}
+semicolons.}
 
 \item{pipe}{Boolean. Whether to use the base pipe to disentangle nested calls. This
 works best on simple calls.}
@@ -27,28 +28,36 @@ works best on simple calls.}
 for pretty printing.}
 
 \item{collapse}{Boolean. Whether to collapse the output to a single string,
-won't be directly visible if \code{style} is \code{TRUE}}
+won't be directly visible if \code{style} is \code{TRUE}.}
 
 \item{unicode_representation}{By default "ascii", which means only ASCII characters
-(code point < 128) will be used to construct a string. This makes sure that
+(code point < 128) will be used to construct strings and variable names. This makes sure that
 homoglyphs (different spaces and other identically displayed unicode characters)
 are printed differently, and avoid possible unfortunate copy and paste
 auto conversion issues. "latin" is more lax and uses all latin characters
 (code point < 256). "character" shows all characters, but not emojis. Finally
 "unicode" displays all characters and emojis, which is what \code{dput()} does.}
 
-\item{escape}{Whether to escape double quotes and backslashes. If \code{FALSE} we use
-single quotes to suround strings containing double quotes, and raw strings
-for strings that contain backslashes and/or a combination of single and
-double quotes. Depending on \code{unicode_representation} \code{escape = FALSE} cannot be applied
-on all strings.}
+\item{escape}{Boolean. Whether to escape double quotes and backslashes. If \code{FALSE} we use
+single quotes to surround strings (including variable and element names)
+containing double quotes, and raw strings for strings that contain backslashes
+and/or a combination of single and double quotes. Depending on
+\code{unicode_representation} \code{escape = FALSE} cannot be applied on all strings.}
+
+\item{pedantic_encoding}{Boolean. Whether to mark strings with the "unknown" encoding
+rather than an explicit native encoding ("UTF-8" or "latin1") when it's
+necessary to reproduce the binary representation exactly. This detail is
+normally of very little significance. The reason why we're not pedantic by default is that
+the constructed code might be different in the console and in snapshot
+tests and reprexes due to the latter rounding some angles, and it would
+be confusing for users.}
 }
 \value{
 a string or a character vector, with a class "constructive_code" for pretty
-printing if \code{style} is \code{TRUE}
+printing if \code{style} is \code{TRUE}.
 }
 \description{
-This is an alternative to \code{base::deparse()} and \code{rlang::expr_deparse()} that
+An alternative to \code{base::deparse()} and \code{rlang::expr_deparse()} that
 handles additional corner cases and fails when encountering tokens other than
 symbols and syntactic literals where cited alternatives would produce non syntactic code.\cr\cr
 }
@@ -58,7 +67,4 @@ deparse_call(expr)
 deparse_call(expr, one_liner = TRUE)
 deparse_call(expr, pipe = TRUE)
 deparse_call(expr, style = FALSE)
-# some corner cases are handled better than in base R
-deparse(call("$", 1, 1)) # returns non syntactic output
-deparse_call(call("$", 1, 1))
 }

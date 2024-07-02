@@ -7,15 +7,15 @@
 opts_S4(constructor = c("new"), ...)
 }
 \arguments{
-\item{constructor}{String. Name of the function used to construct the environment, see Details section.}
+\item{constructor}{String. Name of the function used to construct the object, see Details section.}
 
-\item{...}{Should not be used. Forces passing arguments by name.}
+\item{...}{Additional options used by user defined constructors through the \code{opts} object}
 }
 \value{
 An object of class <constructive_options/constructive_options_S4>
 }
 \description{
 These options will be used on objects of class 'S4'. Note that the support
-for S4 is very experimental so might easily beak. Please report issues if it
+for S4 is very experimental so might easily break. Please report issues if it
 does.
 }

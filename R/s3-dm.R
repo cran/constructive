@@ -1,33 +1,28 @@
-constructors$dm <- new.env()
-
 #' Constructive options class 'dm'
 #'
 #' These options will be used on objects of class 'dm'.
 #'
-#' Depending on `constructor`, we construct the environment as follows:
+#' Depending on `constructor`, we construct the object as follows:
 #' * `"dm"` (default): We use `dm::dm()` and other functions from \pkg{dm} to adjust the content.
 #' * `"next"` : Use the constructor for the next supported class. Call `.class2()`
 #'   on the object to see in which order the methods will be tried.
 #' * `"list"` : Use `list()` and treat the class as a regular attribute.
 #'
-#' @param constructor String. Name of the function used to construct the environment.
+#' @param constructor String. Name of the function used to construct the object.
 #' @inheritParams opts_atomic
 #'
-#' @return An object of class <constructive_options/constructive_options_environment>
+#' @return An object of class <constructive_options/constructive_options_dm>
 #' @export
 opts_dm <- function(constructor = c("dm", "next", "list"), ...) {
-  .cstr_combine_errors(
-    constructor <- .cstr_match_constructor(constructor, "dm"),
-    check_dots_empty()
-  )
-  .cstr_options("dm", constructor = constructor)
+  .cstr_options("dm", constructor = constructor[[1]], ...)
 }
+
 #' @export
+#' @method .cstr_construct dm
 .cstr_construct.dm <- function(x, ...) {
-  opts <- .cstr_fetch_opts("dm", ...)
+  opts <- list(...)$opts$dm %||% opts_dm()
   if (is_corrupted_dm(x) || opts$constructor == "next") return(NextMethod())
-  constructor <- constructors$dm[[opts$constructor]]
-  constructor(x, ...)
+  UseMethod(".cstr_construct.dm", structure(NA, class = opts$constructor))
 }
 
 is_corrupted_dm <- function(x) {
@@ -35,26 +30,34 @@ is_corrupted_dm <- function(x) {
   FALSE
 }
 
-constructors$dm$dm <- function(x, ..., one_liner, pipe) {
+#' @export
+#' @method .cstr_construct.dm dm
+.cstr_construct.dm.dm <- function(x, ...) {
   def <- unclass(x)$def
   named_list_of_tables <- set_names(def$data, def$table)
   code <- .cstr_apply(
-    named_list_of_tables, fun = "dm::dm", trailing_comma = TRUE, implicit_names = TRUE, one_liner = one_liner, pipe = pipe, ...)
+    named_list_of_tables,
+    fun = "dm::dm",
+    trailing_comma = TRUE,
+    implicit_names = TRUE,
+    ...
+    )
 
-  pipe_collapse <- paste0(" ", get_pipe_symbol(pipe), "\n  ")
 
   pk_code <- unlist(Map(
     function(table, pk_tibble) {
       if (!nrow(pk_tibble)) return(character())
-      column_code <- .cstr_construct(pk_tibble$column[[1]], pipe = pipe, one_liner = one_liner, ...)
+      column_code <- .cstr_construct(pk_tibble$column[[1]], ...)
       paste0("dm::dm_add_pk(", protect(table), ", ", paste(column_code, collapse = "\n"), ")")
     } ,
     def$table,
     def$pks,
     USE.NAMES = FALSE))
   if (length(pk_code)) {
+    # FIXME: not compatible with one liners
+    pipe_collapse <- paste0(" ", get_pipe_symbol(list(...)$pipe), "\n  ")
     pk_code <- paste(pk_code, collapse = pipe_collapse)
-    code <- .cstr_pipe(code, pk_code, pipe, one_liner)
+    code <- .cstr_pipe(code, pk_code, ...)
   }
 
   fk_code <- unlist(Map(
@@ -64,9 +67,9 @@ constructors$dm$dm <- function(x, ..., one_liner, pipe) {
         paste0(
           "dm::dm_add_fk(",
           protect(table), ", ",
-          paste(.cstr_construct(column, pipe = pipe, one_liner = one_liner, ...), collapse = "\n"), ", ",
+          paste(.cstr_construct(column, ...), collapse = "\n"), ", ",
           protect(ref_table), ", ",
-          paste(.cstr_construct(ref_column, pipe = pipe, one_liner = one_liner, ...), collapse = "\n"), ")"
+          paste(.cstr_construct(ref_column, ...), collapse = "\n"), ")"
         )
       },
       fk_tibble$table,
@@ -79,26 +82,27 @@ constructors$dm$dm <- function(x, ..., one_liner, pipe) {
     USE.NAMES = FALSE))
   if (length(fk_code)) {
     fk_code <- paste(fk_code, collapse = pipe_collapse)
-    code <- .cstr_pipe(code, fk_code, pipe, one_liner)
+    code <- .cstr_pipe(code, fk_code, ...)
   }
 
   colors <- set_names(def$table, def$display)[!is.na(def$display)]
   if (length(colors)) {
-    color_code <- .cstr_apply(colors, "dm::dm_set_colors", pipe = pipe, one_liner = one_liner, ...)
-    code <- .cstr_pipe(code, color_code, pipe, one_liner)
+    color_code <- .cstr_apply(colors, "dm::dm_set_colors", ...)
+    code <- .cstr_pipe(code, color_code, ...)
   }
   code <- split_by_line(code)
-  repair_attributes_dm(x, code, ..., one_liner = one_liner, pipe = pipe)
+  repair_attributes_dm(x, code, ...)
 }
 
-constructors$dm$list <- function(x, ...) {
+#' @export
+#' @method .cstr_construct.dm list
+.cstr_construct.dm.list <- function(x, ...) {
   .cstr_construct.list(x, ...)
 }
 
-repair_attributes_dm <- function(x, code, ..., pipe = NULL) {
+repair_attributes_dm <- function(x, code, ...) {
   .cstr_repair_attributes(
     x, code, ...,
-    pipe = pipe,
     idiomatic_class = "dm",
     ignore = "version"
   )

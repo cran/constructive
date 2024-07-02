@@ -1,5 +1,5 @@
 test_that("data.frame", {
-  expect_pipe_snapshot({
+  expect_snapshot({
     # one line, implicit row names
     construct(head(cars,2))
     # multiline, with row names
@@ -45,6 +45,9 @@ test_that("data.frame", {
       class = "data.frame"
     ))
     construct(data.frame(a = "two words"), constructive::opts_data.frame("read.table"))
+    # column named with a problematic name
+    constructive::construct(as.data.frame(list(row.names = 1:2)))
+    construct(data.frame(row.names = c("a", "b")))
   })
 })
 

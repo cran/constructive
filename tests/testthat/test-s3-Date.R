@@ -12,10 +12,10 @@ test_that("Date", {
     tz = "GMT"
   )
 
-  expect_pipe_snapshot({
+  expect_snapshot({
     construct(structure(19469, class = "Date"))
     construct(structure(19469, class = "Date"), opts_Date("next"))
-    construct(structure(19469, class = "Date"), opts_Date("atomic"))
+    construct(structure(19469, class = "Date"), opts_Date("double"))
     construct(structure(19469L, class = "Date"))
     construct(structure("19469", class = "Date"))
     # one line
@@ -40,5 +40,12 @@ test_that("Date", {
     construct(dates, opts_Date(origin = "2000-01-01"))
     construct(dates, opts_Date("as_date", origin = "2000-01-01"))
     construct(dates, opts_Date("date", origin = "2000-01-01"))
+    construct(as.Date(Inf), opts_Date("as.Date"))
+    construct(as.Date(Inf), opts_Date("as_date"))
+    construct(as.Date(NaN), opts_Date("as.Date"))
+    construct(as.Date(NaN), opts_Date("as_date"))
+    construct(as.Date(NA), opts_Date("as.Date"))
+    construct(as.Date(NA), opts_Date("as_date"))
+    construct(as.Date(Inf), opts_Date("as_date"))
   })
 })

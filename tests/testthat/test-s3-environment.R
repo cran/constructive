@@ -1,5 +1,5 @@
 test_that("environment", {
-  expect_pipe_snapshot({
+  expect_snapshot({
     # handle special cases
     construct(globalenv())
     construct(baseenv())
@@ -32,7 +32,7 @@ test_that("environment", {
     e <- new.env()
     e$f <- e
     foo <- evalq(~a, e)
-    construct(foo, opts_environment(predefine = TRUE), opts_formula(environment = TRUE))
+    construct(foo, opts_environment("predefine"), opts_formula(environment = TRUE))
     }, .GlobalEnv)
   })
 
@@ -47,6 +47,27 @@ test_that("environment", {
 
   skip_if(identical(Sys.getenv("R_COVR"), "true"))
   expect_snapshot({
-    construct(constructive::.cstr_construct, opts_environment(predefine = TRUE), opts_function(environment = TRUE))
+    construct(constructive::.cstr_construct, opts_environment("predefine"), opts_function(environment = TRUE))
+  })
+
+  expect_snapshot({
+    e <- rlang::env(.GlobalEnv, a = 1, b = 2, c = 3, d = 4)
+    construct(e, check = FALSE)
+    lockEnvironment(e)
+    construct(e, check = FALSE)
+    construct(e, opts_environment("list2env"))
+    lockBinding("a", e)
+    construct(e, opts_environment("list2env"))
+    lockBinding("b", e)
+    construct(e, opts_environment("list2env"))
+    lockBinding("c", e)
+    construct(e, opts_environment("list2env"))
+    lockBinding("d", e)
+    construct(e, opts_environment("list2env"))
+  })
+
+  expect_snapshot({
+    construct(getNamespaceInfo("datasets", "lazydata"))
+    construct(parent.env(asNamespace("stats")))
   })
 })

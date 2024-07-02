@@ -5,22 +5,22 @@
 \title{Constructive options for formulas}
 \usage{
 opts_formula(
-  constructor = c("~", "formula", "as.formula", "new_formula", "next"),
+  constructor = c("default", "formula", "as.formula", "new_formula", "next"),
   ...,
   environment = TRUE
 )
 }
 \arguments{
-\item{constructor}{String. Name of the function used to construct the environment, see Details section.}
+\item{constructor}{String. Name of the function used to construct the object, see Details section.}
 
-\item{...}{Should not be used. Forces passing arguments by name.}
+\item{...}{Additional options used by user defined constructors through the \code{opts} object}
 
 \item{environment}{Boolean. Whether to attempt to construct the environment, if
 it makes a difference to construct it.
 
 Depending on \code{constructor}, we construct the formula as follows:
 \itemize{
-\item \code{"~"} (default): We construct the formula in the most common way using the \code{~}
+\item \code{"default"}: We construct the formula in the most common way using the \code{~}
 operator.
 \item \code{"formula"} : deparse the formula as a string and use \code{base::formula()} on top of it.
 \item \code{"as.formula"} : Same as above, but using \code{base::as.formula()}.
@@ -30,7 +30,7 @@ if relevant.
 }}
 }
 \value{
-An object of class <constructive_options/constructive_options_environment>
+An object of class <constructive_options/constructive_options_formula>
 }
 \description{
 These options will be used on formulas, defined as calls to \code{~}, regardless

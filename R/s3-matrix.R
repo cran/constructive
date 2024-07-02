@@ -1,11 +1,9 @@
-constructors$matrix <- new.env()
-
 #' Constructive options for matrices
 #'
 #' Matrices are atomic vectors, lists, or objects of type `"expression"` with a `"dim"`
 #' attributes of length 2.
 #'
-#' Depending on `constructor`, we construct the environment as follows:
+#' Depending on `constructor`, we construct the object as follows:
 #' * `"matrix"` : We use `matrix()`
 #' * `"array"` : We use `array()`
 #' * `"next"` : Use the constructor for the next supported class. Call `.class2()`
@@ -13,31 +11,30 @@ constructors$matrix <- new.env()
 #'   be equivalent to `"array"`
 #' * `"atomic"` : We define as an atomic vector and repair attributes
 #'
-#' @param constructor String. Name of the function used to construct the environment.
+#' @param constructor String. Name of the function used to construct the object.
 #' @inheritParams opts_atomic
 #'
-#' @return An object of class <constructive_options/constructive_options_environment>
+#' @return An object of class <constructive_options/constructive_options_matrix>
 #' @export
-opts_matrix  <- function(constructor = c("matrix", "array", "next", "atomic"), ...) {
-  .cstr_combine_errors(
-    constructor <- .cstr_match_constructor(constructor, "matrix"),
-    check_dots_empty()
-  )
-  .cstr_options("matrix", constructor = constructor)
+opts_matrix  <- function(constructor = c("matrix", "array", "next"), ...) {
+  .cstr_options("matrix", constructor = constructor[[1]], ...)
 }
 
 #' @export
+#' @method .cstr_construct matrix
 .cstr_construct.matrix <- function(x, ...) {
-  opts <- .cstr_fetch_opts("matrix", ...)
+  opts <- list(...)$opts$matrix %||% opts_matrix()
   if (is_corrupted_matrix(x) || opts$constructor == "next") return(NextMethod())
-  constructors$matrix[[opts$constructor]](x, ...)
+  UseMethod(".cstr_construct.matrix", structure(NA, class = opts$constructor))
 }
 
 is_corrupted_matrix <- function(x) {
   is_corrupted_array(x) || length(dim(x)) != 2
 }
 
-constructors$matrix$matrix <- function(x, ...) {
+#' @export
+#' @method .cstr_construct.matrix matrix
+.cstr_construct.matrix.matrix <- function(x, ...) {
   dim <- attr(x, "dim")
   dimnames <- attr(x, "dimnames")
   dim_names_lst <- if (!is.null(dimnames)) list(dimnames = dimnames)
@@ -51,13 +48,10 @@ constructors$matrix$matrix <- function(x, ...) {
   repair_attributes_matrix(x, code, ...)
 }
 
-constructors$matrix$array <- function(x, ...) {
-  code <- constructors$array$array(x, ...)
-  repair_attributes_matrix(x, code, ...)
-}
-
-constructors$matrix$atomic <- function(x, ...) {
-  .cstr_construct.default(x, ...)
+#' @export
+#' @method .cstr_construct.matrix array
+.cstr_construct.matrix.array <- function(x, ...) {
+  .cstr_construct.array.array(x, ...)
 }
 
 repair_attributes_matrix <- function(x, code, ..., pipe = NULL) {

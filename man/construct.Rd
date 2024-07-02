@@ -11,9 +11,13 @@ construct(
   data = NULL,
   pipe = NULL,
   check = NULL,
+  unicode_representation = c("ascii", "latin", "character", "unicode"),
+  escape = FALSE,
+  pedantic_encoding = FALSE,
   compare = compare_options(),
   one_liner = FALSE,
-  template = getOption("constructive_opts_template")
+  template = getOption("constructive_opts_template"),
+  classes = NULL
 )
 
 construct_multi(
@@ -22,9 +26,14 @@ construct_multi(
   data = NULL,
   pipe = NULL,
   check = NULL,
+  unicode_representation = c("ascii", "latin", "character", "unicode"),
+  escape = FALSE,
+  pedantic_encoding = FALSE,
   compare = compare_options(),
   one_liner = FALSE,
-  template = getOption("constructive_opts_template")
+  template = getOption("constructive_opts_template"),
+  classes = NULL,
+  include_dotted = TRUE
 )
 }
 \arguments{
@@ -44,6 +53,28 @@ Defaults to \code{"base"} for R >= 4.2, otherwise to \code{"magrittr"}.}
 \item{check}{Boolean. Whether to check if the created code reproduces the object
 using \code{waldo::compare()}.}
 
+\item{unicode_representation}{By default "ascii", which means only ASCII characters
+(code point < 128) will be used to construct strings and variable names. This makes sure that
+homoglyphs (different spaces and other identically displayed unicode characters)
+are printed differently, and avoid possible unfortunate copy and paste
+auto conversion issues. "latin" is more lax and uses all latin characters
+(code point < 256). "character" shows all characters, but not emojis. Finally
+"unicode" displays all characters and emojis, which is what \code{dput()} does.}
+
+\item{escape}{Boolean. Whether to escape double quotes and backslashes. If \code{FALSE} we use
+single quotes to surround strings (including variable and element names)
+containing double quotes, and raw strings for strings that contain backslashes
+and/or a combination of single and double quotes. Depending on
+\code{unicode_representation} \code{escape = FALSE} cannot be applied on all strings.}
+
+\item{pedantic_encoding}{Boolean. Whether to mark strings with the "unknown" encoding
+rather than an explicit native encoding ("UTF-8" or "latin1") when it's
+necessary to reproduce the binary representation exactly. This detail is
+normally of very little significance. The reason why we're not pedantic by default is that
+the constructed code might be different in the console and in snapshot
+tests and reprexes due to the latter rounding some angles, and it would
+be confusing for users.}
+
 \item{compare}{Parameters passed to \code{waldo::compare()}, built with \code{compare_options()}.}
 
 \item{one_liner}{Boolean. Whether to collapse the output to a single line of code.}
@@ -51,20 +82,34 @@ using \code{waldo::compare()}.}
 \item{template}{A list of constructive options built with \verb{opts_*()} functions,
 they will be overriden by \code{...}. Use it to set a default
 behavior for \code{{constructive}}.}
+
+\item{classes}{A character vector of classes for which to use idiomatic
+constructors when available, we can provide a package instead of all its
+classes, in the "\{pkg\}" form, and we can use a minus sign (inside the quotes)
+to exclude rather than include. By default we use idiomatic constructors
+whenever possible. The special values \code{"*none*"} and \code{"*base*"} can be used
+to restrict the idiomatic construction to the objects. See \code{construct_dput()}
+and \code{construct_base()} for wrappers around this feature.}
+
+\item{include_dotted}{Whether to include names starting with dots, this includes
+\code{.Random.seed} in the global environment and objects like \code{.Class} and
+\code{.Generic} in the execution environments of S3 methods.}
 }
 \value{
 An object of class 'constructive'.
 }
 \description{
-\code{construct()} builds the code to reproduce one object, \code{construct_multi()}
-builds the code to reproduce objects stored in a named list or environment.
+\itemize{
+\item \code{construct()} builds the code to reproduce one object,
+\item \code{construct_multi()} builds the code to reproduce objects stored in a named
+list or environment.
+}
 }
 \details{
-\code{construct_multi()} recognizes promises, this means that for instance
-\code{construct_multi(environment())} can be called in a
-function and will construct unevaluated arguments using \code{delayedAssign()}.
-Note however that \code{construct_multi(environment())} is equivalent to \code{construct_reprex()}
-called without argument and the latter is preferred.
+\code{construct_multi()} recognizes promises (also called lazy bindings),
+this means that for instance \code{construct_multi(environment())} can be called
+when debugging a function and will construct unevaluated arguments using
+\code{delayedAssign()}.
 }
 \examples{
 construct(head(cars))
@@ -72,6 +117,11 @@ construct(head(cars), opts_data.frame("read.table"))
 construct(head(cars), opts_data.frame("next"))
 construct(iris$Species)
 construct(iris$Species, opts_atomic(compress = FALSE), opts_factor("new_factor"))
+construct_multi(list(a = head(cars), b = iris$Species))
+}
+\seealso{
+\code{\link[=construct_dput]{construct_dput()}} \code{\link[=construct_base]{construct_base()}} \code{\link[=construct_clip]{construct_clip()}}
+\code{\link[=construct_dump]{construct_dump()}} \code{\link[=construct_reprex]{construct_reprex()}} \code{\link[=construct_diff]{construct_diff()}}
 }
 \section{Constructive options}{
 Constructive options provide a way to customize the output of `construct()`.
@@ -79,42 +129,93 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
 
 \itemize{
   \item \code{\link[=opts_array]{opts_array}(constructor = c("array", "next"), ...)}
-  \item \code{\link[=opts_AsIs]{opts_AsIs}(constructor = c("I", "next", "atomic"), ...)}
-  \item \code{\link[=opts_atomic]{opts_atomic}(..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE, unicode_representation = c("ascii", "latin", "character", "unicode"), escape = FALSE)}
+  \item \code{\link[=opts_AsIs]{opts_AsIs}(constructor = c("I", "next"), ...)}
+  \item \code{\link[=opts_atomic]{opts_atomic}(..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
+  \item \code{\link[=opts_bibentry]{opts_bibentry}(constructor = c("bibentry", "next"), ...)}
+  \item \code{\link[=opts_blob]{opts_blob}(constructor = c("blob", "next"), ...)}
+  \item \code{\link[=opts_character]{opts_character}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE, unicode_representation = c("ascii", "latin", "character", "unicode"), escape = FALSE)}
+  \item \code{\link[=opts_citationFooter]{opts_citationFooter}(constructor = c("citFooter", "next"), ...)}
+  \item \code{\link[=opts_citationHeader]{opts_citationHeader}(constructor = c("citHeader", "next"), ...)}
   \item \code{\link[=opts_classGeneratorFunction]{opts_classGeneratorFunction}(constructor = c("setClass"), ...)}
   \item \code{\link[=opts_classPrototypeDef]{opts_classPrototypeDef}(constructor = c("prototype"), ...)}
   \item \code{\link[=opts_classRepresentation]{opts_classRepresentation}(constructor = c("getClassDef"), ...)}
+  \item \code{\link[=opts_complex]{opts_complex}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
   \item \code{\link[=opts_constructive_options]{opts_constructive_options}(constructor = c("opts", "next"), ...)}
+  \item \code{\link[=opts_CoordCartesian]{opts_CoordCartesian}(constructor = c("coord_cartesian", "next", "environment"), ...)}
+  \item \code{\link[=opts_CoordFixed]{opts_CoordFixed}(constructor = c("coord_fixed", "next", "environment"), ...)}
+  \item \code{\link[=opts_CoordFlip]{opts_CoordFlip}(constructor = c("coord_flip", "next", "environment"), ...)}
+  \item \code{\link[=opts_CoordMap]{opts_CoordMap}(constructor = c("coord_map", "next", "environment"), ...)}
+  \item \code{\link[=opts_CoordMunch]{opts_CoordMunch}(constructor = c("coord_munch", "next", "environment"), ...)}
+  \item \code{\link[=opts_CoordPolar]{opts_CoordPolar}(constructor = c("coord_polar", "next", "environment"), ...)}
+  \item \code{\link[=opts_CoordQuickmap]{opts_CoordQuickmap}(constructor = c("coord_quickmap", "next", "environment"), ...)}
+  \item \code{\link[=opts_CoordSf]{opts_CoordSf}(constructor = c("coord_sf", "next", "environment"), ...)}
+  \item \code{\link[=opts_CoordTrans]{opts_CoordTrans}(constructor = c("coord_trans", "next", "environment"), ...)}
   \item \code{\link[=opts_data.frame]{opts_data.frame}(constructor = c("data.frame", "read.table", "next", "list"), ...)}
   \item \code{\link[=opts_data.table]{opts_data.table}(constructor = c("data.table", "next", "list"), ..., selfref = FALSE)}
-  \item \code{\link[=opts_Date]{opts_Date}(constructor = c("as.Date", "as_date", "date", "new_date", "as.Date.numeric", "as_date.numeric", "next", "atomic"), ..., origin = "1970-01-01")}
+  \item \code{\link[=opts_Date]{opts_Date}(constructor = c("as.Date", "as_date", "date", "new_date", "as.Date.numeric", "as_date.numeric", "next", "double"), ..., origin = "1970-01-01")}
+  \item \code{\link[=opts_difftime]{opts_difftime}(constructor = c("as.difftime", "next"), ...)}
   \item \code{\link[=opts_dm]{opts_dm}(constructor = c("dm", "next", "list"), ...)}
   \item \code{\link[=opts_dots]{opts_dots}(constructor = c("default"), ...)}
-  \item \code{\link[=opts_environment]{opts_environment}(constructor = c(".env", "list2env", "as.environment", "new.env", "topenv", "new_environment"), ..., recurse = FALSE, predefine = FALSE)}
+  \item \code{\link[=opts_double]{opts_double}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
+  \item \code{\link[=opts_element_blank]{opts_element_blank}(constructor = c("element_blank", "next", "list"), ...)}
+  \item \code{\link[=opts_element_grob]{opts_element_grob}(constructor = c("element_grob", "next", "list"), ...)}
+  \item \code{\link[=opts_element_line]{opts_element_line}(constructor = c("element_line", "next", "list"), ...)}
+  \item \code{\link[=opts_element_rect]{opts_element_rect}(constructor = c("element_rect", "next", "list"), ...)}
+  \item \code{\link[=opts_element_render]{opts_element_render}(constructor = c("element_render", "next", "list"), ...)}
+  \item \code{\link[=opts_element_text]{opts_element_text}(constructor = c("element_text", "next", "list"), ...)}
+  \item \code{\link[=opts_environment]{opts_environment}(constructor = c(".env", "list2env", "as.environment", "new.env", "topenv", "new_environment", "predefine"), ..., recurse = FALSE)}
+  \item \code{\link[=opts_error]{opts_error}(constructor = c("errorCondition", "next"), ...)}
+  \item \code{\link[=opts_expression]{opts_expression}(constructor = c("default"), ...)}
   \item \code{\link[=opts_externalptr]{opts_externalptr}(constructor = c("default"), ...)}
-  \item \code{\link[=opts_factor]{opts_factor}(constructor = c("factor", "as_factor", "new_factor", "next", "atomic"), ...)}
-  \item \code{\link[=opts_formula]{opts_formula}(constructor = c("~", "formula", "as.formula", "new_formula", "next"), ..., environment = TRUE)}
+  \item \code{\link[=opts_FacetWrap]{opts_FacetWrap}(constructor = c("facet_wrap", "ggproto", "next", "environment"), ...)}
+  \item \code{\link[=opts_factor]{opts_factor}(constructor = c("factor", "as_factor", "new_factor", "next", "integer"), ...)}
+  \item \code{\link[=opts_formula]{opts_formula}(constructor = c("default", "formula", "as.formula", "new_formula", "next"), ..., environment = TRUE)}
   \item \code{\link[=opts_function]{opts_function}(constructor = c("function", "as.function", "new_function"), ..., environment = TRUE, srcref = FALSE, trim = NULL)}
+  \item \code{\link[=opts_ggplot]{opts_ggplot}(constructor = c("ggplot", "next", "list"), ...)}
+  \item \code{\link[=opts_ggproto]{opts_ggproto}(constructor = c("default", "next", "environment"), ...)}
   \item \code{\link[=opts_grouped_df]{opts_grouped_df}(constructor = c("default", "next", "list"), ...)}
+  \item \code{\link[=opts_hexmode]{opts_hexmode}(constructor = c("as.hexmode", "next"), ..., integer = FALSE)}
+  \item \code{\link[=opts_integer]{opts_integer}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
+  \item \code{\link[=opts_integer64]{opts_integer64}(constructor = c("as.integer64", "next", "double"), ...)}
+  \item \code{\link[=opts_labels]{opts_labels}(constructor = c("labs", "next", "list"), ...)}
   \item \code{\link[=opts_language]{opts_language}(constructor = c("default"), ...)}
-  \item \code{\link[=opts_Layer]{opts_Layer}(constructor = c("default", "layer", "environment"), ...)}
+  \item \code{\link[=opts_Layer]{opts_Layer}(constructor = c("default", "layer", "next", "environment"), ...)}
   \item \code{\link[=opts_list]{opts_list}(constructor = c("list", "list2"), ..., trim = NULL, fill = c("vector", "new_list", "+", "...", "none"))}
-  \item \code{\link[=opts_matrix]{opts_matrix}(constructor = c("matrix", "array", "next", "atomic"), ...)}
+  \item \code{\link[=opts_logical]{opts_logical}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
+  \item \code{\link[=opts_margin]{opts_margin}(constructor = c("margin", "next", "double"), ...)}
+  \item \code{\link[=opts_matrix]{opts_matrix}(constructor = c("matrix", "array", "next"), ...)}
   \item \code{\link[=opts_mts]{opts_mts}(constructor = c("ts", "next", "atomic"), ...)}
-  \item \code{\link[=opts_numeric_version]{opts_numeric_version}(constructor = c("numeric_version", "next", "atomic"), ...)}
-  \item \code{\link[=opts_ordered]{opts_ordered}(constructor = c("ordered", "factor", "new_ordered", "next", "atomic"), ...)}
-  \item \code{\link[=opts_package_version]{opts_package_version}(constructor = c("package_version", "next", "atomic"), ...)}
+  \item \code{\link[=opts_noquote]{opts_noquote}(constructor = c("noquote", "next"), ...)}
+  \item \code{\link[=opts_NULL]{opts_NULL}(constructor = "NULL", ...)}
+  \item \code{\link[=opts_numeric_version]{opts_numeric_version}(constructor = c("numeric_version", "next", "list"), ...)}
+  \item \code{\link[=opts_octmode]{opts_octmode}(constructor = c("as.octmode", "next"), ..., integer = FALSE)}
+  \item \code{\link[=opts_ordered]{opts_ordered}(constructor = c("ordered", "factor", "new_ordered", "next", "integer"), ...)}
+  \item \code{\link[=opts_package_version]{opts_package_version}(constructor = c("package_version", "next", "list"), ...)}
   \item \code{\link[=opts_pairlist]{opts_pairlist}(constructor = c("pairlist", "pairlist2"), ...)}
+  \item \code{\link[=opts_person]{opts_person}(constructor = c("person", "next"), ...)}
   \item \code{\link[=opts_POSIXct]{opts_POSIXct}(constructor = c("as.POSIXct", ".POSIXct", "as_datetime", "as.POSIXct.numeric", "as_datetime.numeric", "next", "atomic"), ..., origin = "1970-01-01")}
   \item \code{\link[=opts_POSIXlt]{opts_POSIXlt}(constructor = c("as.POSIXlt", "next", "list"), ...)}
   \item \code{\link[=opts_quosure]{opts_quosure}(constructor = c("new_quosure", "next", "language"), ...)}
   \item \code{\link[=opts_quosures]{opts_quosures}(constructor = c("new_quosures", "next", "list"), ...)}
-  \item \code{\link[=opts_R_system_version]{opts_R_system_version}(constructor = c("R_system_version", "next", "atomic"), ...)}
+  \item \code{\link[=opts_R_system_version]{opts_R_system_version}(constructor = c("R_system_version", "next", "list"), ...)}
+  \item \code{\link[=opts_raw]{opts_raw}(constructor = c("as.raw", "charToRaw"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE, representation = c("hexadecimal", "decimal"))}
+  \item \code{\link[=opts_rel]{opts_rel}(constructor = c("rel", "next", "double"), ...)}
   \item \code{\link[=opts_rowwise_df]{opts_rowwise_df}(constructor = c("default", "next", "list"), ...)}
   \item \code{\link[=opts_S4]{opts_S4}(constructor = c("new"), ...)}
-  \item \code{\link[=opts_tbl_df]{opts_tbl_df}(constructor = c("tibble", "tribble", "next", "list"), ..., trailing_comma = TRUE)}
+  \item \code{\link[=opts_Scale]{opts_Scale}(constructor = c("default", "next", "environment"), ...)}
+  \item \code{\link[=opts_ScalesList]{opts_ScalesList}(constructor = c("ScalesList", "next", "list"), ...)}
+  \item \code{\link[=opts_simpleCondition]{opts_simpleCondition}(constructor = c("simpleCondition", "next"), ...)}
+  \item \code{\link[=opts_simpleError]{opts_simpleError}(constructor = c("simpleError", "next"), ...)}
+  \item \code{\link[=opts_simpleMessage]{opts_simpleMessage}(constructor = c("simpleMessage", "next"), ...)}
+  \item \code{\link[=opts_simpleUnit]{opts_simpleUnit}(constructor = c("unit", "next", "double"), ...)}
+  \item \code{\link[=opts_simpleWarning]{opts_simpleWarning}(constructor = c("simpleWarning", "next"), ...)}
+  \item \code{\link[=opts_tbl_df]{opts_tbl_df}(constructor = c("tibble", "tribble", "next", "list"), ..., trailing_comma = TRUE, justify = c("left", "right", "centre", "none"))}
+  \item \code{\link[=opts_theme]{opts_theme}(constructor = c("theme", "next", "list"), ...)}
   \item \code{\link[=opts_ts]{opts_ts}(constructor = c("ts", "next", "atomic"), ...)}
-  \item \code{\link[=opts_vctrs_list_of]{opts_vctrs_list_of}(constructor = c("list_of", "list"), ...)}
+  \item \code{\link[=opts_uneval]{opts_uneval}(constructor = c("aes", "next", "list"), ...)}
+  \item \code{\link[=opts_vctrs_list_of]{opts_vctrs_list_of}(constructor = c("list_of", "next", "list"), ...)}
+  \item \code{\link[=opts_waiver]{opts_waiver}(constructor = c("waiver", "next", "list"), ...)}
+  \item \code{\link[=opts_warning]{opts_warning}(constructor = c("warningCondition", "next"), ...)}
   \item \code{\link[=opts_weakref]{opts_weakref}(constructor = c("new_weakref"), ...)}
 }
 }

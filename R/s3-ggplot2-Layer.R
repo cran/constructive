@@ -12,42 +12,42 @@
 #'  The latter constructor is the only one that reproduces the object exactly
 #'  since Layers are environments and environments can't be exactly copied (see `?opts_environment`)
 #'
-#' @param constructor String. Name of the function used to construct the environment, see Details section.
+#' @param constructor String. Name of the function used to construct the object, see Details section.
 #' @inheritParams opts_atomic
 #' @return An object of class <constructive_options/constructive_options_Layer>
 #' @export
-opts_Layer <- function(constructor = c("default", "layer", "environment"), ...) {
-  .cstr_combine_errors(
-    constructor <- rlang::arg_match(constructor),
-    check_dots_empty()
-  )
-  .cstr_options("Layer", constructor = constructor)
+opts_Layer <- function(constructor = c("default", "layer", "next", "environment"), ...) {
+  .cstr_options("Layer", constructor = constructor[[1]], ...)
 }
 
 #' @export
-.cstr_construct.Layer <- function(x, ..., env) {
-  opts <- .cstr_fetch_opts("Layer", ...)
-
-  ## "environment" constructor
-  if (opts$constructor == "environment") {
-    return(.cstr_construct.environment(x, ...))
-  }
-
-  ## "default" constructor
-  if (opts$constructor == "default" && !is.null(x$constructor)) {
-    return(construct_layer_default(x$constructor, env, ...))
-  }
-
-  ## "layer" constructor (and fallback from "default")
-  construct_layer_layer(x, ...)
+#' @method .cstr_construct Layer
+.cstr_construct.Layer <- function(x, ...) {
+  opts <- list(...)$opts$Layer %||% opts_Layer()
+  if (is_corrupted_Layer(x) || opts$constructor == "next") return(NextMethod())
+  UseMethod(".cstr_construct.Layer", structure(NA, class = opts$constructor))
 }
 
-construct_layer_default <- function(constructor, env, ...) {
+is_corrupted_Layer <- function(x) {
+  # TODO
+  FALSE
+}
+
+#' @export
+#' @method .cstr_construct.Layer environment
+.cstr_construct.Layer.environment <- function(x, ..., env) {
+  .cstr_construct.environment(x, ...)
+}
+
+#' @export
+#' @method .cstr_construct.Layer default
+.cstr_construct.Layer.default <- function(x, env, ...) {
+  constructor <- x$constructor
   caller_lng <- constructor[[1]]
   caller_val <- eval(caller_lng, env)
   ns <-  topenv(environment(caller_val)) # the most likely namespace
   if (isNamespace(ns) && rlang::is_call(constructor, ns = getNamespaceName(ns))) {
-    caller_chr <- deparse_call(caller_lng, style = FALSE, collapse = FALSE)
+    caller_chr <- deparse_call0(caller_lng, ...)
   } else if (is.symbol(caller_lng) && isNamespace(ns) && as.character(caller_lng) %in% getNamespaceExports(ns)) {
     caller_chr <- paste0(getNamespaceName(ns), "::", as.character(caller_lng))
   } else {
@@ -58,7 +58,9 @@ construct_layer_default <- function(constructor, env, ...) {
   .cstr_apply(args, caller_chr, env = env, ...)
 }
 
-construct_layer_layer <- function(x, ...) {
+#' @export
+#' @method .cstr_construct.Layer layer
+.cstr_construct.Layer.layer <- function(x, ...) {
   # reconstruct the parameters from layer()
   # layer(
   #   geom = NULL, stat = NULL, data = NULL, mapping = NULL, position = NULL,
@@ -75,7 +77,7 @@ construct_layer_layer <- function(x, ...) {
   # in layer() the raw_key string when given is used to replace geom by a function
   # right before the ggproto call
   x <- as.list(x)
-  key_glyph <- construct_glyph(x$geom$draw_key)
+  key_glyph <- construct_glyph(x$geom$draw_key, ...)
   ggproto.ignore_draw_key <- !is.null(key_glyph)
 
   # geom -----------------------------------------------------------------------
@@ -114,7 +116,7 @@ construct_layer_layer <- function(x, ...) {
   if (isTRUE(args$inherit.aes)) args$inherit.aes <- NULL
   if (rlang::is_na(args$show.legend)) args$show.legend <- NULL
   if (is.null(key_glyph)) args$key_glyph <- NULL
-  args_chr <- lapply(args, .cstr_construct, ggproto.ignore_draw_key = ggproto.ignore_draw_key, ...)
+  args_chr <- lapply(args, function(x, ...) .cstr_construct(x, ...), ggproto.ignore_draw_key = ggproto.ignore_draw_key, ...)
   args_chr$key_glyph <- key_glyph
   args_chr$geom <- geom
 
@@ -123,7 +125,7 @@ construct_layer_layer <- function(x, ...) {
 }
 
 
-construct_glyph <- function(draw_key) {
+construct_glyph <- function(draw_key, ...) {
   if (is.null(draw_key)) return(NULL)
 
   key_glyph <- draw_key
@@ -160,5 +162,5 @@ construct_glyph <- function(draw_key) {
     }
   }
 
-  .cstr_construct(key_glyph)
+  .cstr_construct(key_glyph, ...)
 }

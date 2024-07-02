@@ -1,10 +1,8 @@
-constructors$ordered <- new.env()
-
 #' Constructive options for class 'ordered'
 #'
 #' These options will be used on objects of class 'ordered'.
 #'
-#' Depending on `constructor`, we construct the environment as follows:
+#' Depending on `constructor`, we construct the object as follows:
 #' * `"ordered"` (default): Build the object using `ordered()`, levels won't
 #'   be defined explicitly if they are in alphabetical order (locale dependent!)
 #' * `"factor"` : Same as above but build the object using `factor()` and `ordered = TRUE`.
@@ -12,36 +10,33 @@ constructors$ordered <- new.env()
 #'   always defined explicitly.
 #' * `"next"` : Use the constructor for the next supported class. Call `.class2()`
 #'   on the object to see in which order the methods will be tried.
-#' * `"atomic"` : We define as an atomic vector and repair attributes
+#' * `"integer"` : We define as an integer vector and repair attributes
 #'
-#' @param constructor String. Name of the function used to construct the environment, see Details section.
+#' @param constructor String. Name of the function used to construct the object, see Details section.
 #' @inheritParams opts_atomic
 #'
-#' @return An object of class <constructive_options/constructive_options_factor>
+#' @return An object of class <constructive_options/constructive_options_ordered>
 #' @export
-opts_ordered <- function(constructor = c("ordered", "factor", "new_ordered", "next", "atomic"), ...) {
-  .cstr_combine_errors(
-    constructor <- .cstr_match_constructor(constructor, "ordered"),
-    check_dots_empty()
-  )
-  .cstr_options("ordered", constructor = constructor)
+opts_ordered <- function(constructor = c("ordered", "factor", "new_ordered", "next", "integer"), ...) {
+  .cstr_options("ordered", constructor = constructor[[1]], ...)
 }
 
 #' @export
+#' @method .cstr_construct ordered
 .cstr_construct.ordered <- function(x, ...) {
-  opts <- .cstr_fetch_opts("ordered", ...)
+  opts <- list(...)$opts$ordered %||% opts_ordered()
   if (is_corrupted_ordered(x) || opts$constructor == "next") return(NextMethod())
-  constructor <- constructors$ordered[[opts$constructor]]
-  constructor(x, ...)
+  UseMethod(".cstr_construct.ordered", structure(NA_integer_, class = opts$constructor))
 }
 
 is_corrupted_ordered <- function(x) {
-  # TODO
-  FALSE
+  # FIXME
+  typeof(x) != "integer"
 }
 
 #' @export
-constructors$ordered$ordered <- function(x, ...) {
+#' @method .cstr_construct.ordered ordered
+.cstr_construct.ordered.ordered <- function(x, ...) {
   levs <- levels(x)
   args <- list(setNames(as.character(x), names(x)))
   default_levs <- sort(unique(as.character(x)))
@@ -56,7 +51,8 @@ constructors$ordered$ordered <- function(x, ...) {
 }
 
 #' @export
-constructors$ordered$factor <- function(x, ...) {
+#' @method .cstr_construct.ordered factor
+.cstr_construct.ordered.factor <- function(x, ...) {
   levs <- levels(x)
   args <- list(setNames(as.character(x), names(x)))
   default_levs <- sort(unique(as.character(x)))
@@ -67,17 +63,18 @@ constructors$ordered$factor <- function(x, ...) {
   repair_attributes_ordered(x, code, ...)
 }
 
-
 #' @export
-constructors$ordered$new_ordered <- function(x, ...) {
+#' @method .cstr_construct.ordered new_ordered
+.cstr_construct.ordered.new_ordered <- function(x, ...) {
   levs <- levels(x)
   code <- .cstr_apply(list(setNames(as.integer(x), names(x)), levels = levs), "vctrs::new_ordered", ...)
   repair_attributes_ordered(x, code, ...)
 }
 
 #' @export
-constructors$ordered$atomic <- function(x, ...) {
-  .cstr_construct.atomic(x, ...)
+#' @method .cstr_construct.ordered integer
+.cstr_construct.ordered.integer <- function(x, ...) {
+  .cstr_construct.integer(x, ...)
 }
 
 repair_attributes_ordered <- function(x, code, ..., pipe = NULL) {

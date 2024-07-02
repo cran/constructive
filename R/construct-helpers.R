@@ -78,7 +78,7 @@ try_eval <- function(styled_code, data, check, caller) {
   # in the proper env, this makes a difference for calls that capture the env
   local_bindings(!!!data, .env = caller)
   rlang::try_fetch(
-    suppressWarnings(eval(parse(text = styled_code), caller)),
+    suppress_all_output(eval(parse(text = styled_code), caller)),
     error = function(e) {
       #nocov start
       msg <- "The code built by {constructive} could not be evaluated."
@@ -90,6 +90,16 @@ try_eval <- function(styled_code, data, check, caller) {
       rlang::inform(c("!" = msg, "!" = paste("Due to error:", paste(e$message, collapse = "\n"))))
       #nocov end
     }
+  )
+}
+
+suppress_all_output <- function(expr) {
+  sink(tempfile())
+  on.exit(sink())
+  withCallingHandlers(
+    expr,
+    warning = function(w) tryInvokeRestart("muffleWarning"),
+    message = function(c) tryInvokeRestart("muffleMessage")
   )
 }
 
@@ -151,32 +161,150 @@ new_constructive <- function(code, compare) {
 #'
 #' @return A character vector
 #' @export
-.cstr_construct <- function(x, ..., data = NULL) {
+.cstr_construct <- function(x, ..., data = NULL, classes = NULL) {
   data_name <- perfect_match(x, data)
   if (!is.null(data_name)) return(data_name)
-  UseMethod(".cstr_construct")
+  if (is.null(classes)) {
+    UseMethod(".cstr_construct")
+  } else if (identical(classes, "-")) {
+    .cstr_construct.default(x, ..., classes = classes)
+  } else if (classes[[1]] == "-") {
+    cl <- setdiff(.class2(x), classes[-1])
+    UseMethod(".cstr_construct", structure(NA_integer_, class = cl))
+  } else {
+    cl <- intersect(.class2(x), classes)
+    UseMethod(".cstr_construct", structure(NA_integer_, class = cl))
+  }
 }
 
-#' Validate a constructor
-#'
-#' Fails if the chosen constructor doesn't exist.
-#'
-#' @param constructor a String (or character vector but only the first item will
-#'   be considered)
-#' @param class A string
-#' @return A string, the first value of `constructor` if it is the name of a n existing
-#' constructor or "next".
-#' @export
-.cstr_match_constructor <- function(constructor, class) {
-  constructor <- constructor[[1]]
-  choices <- ls(constructors[[class]], all.names = TRUE)
-  internal_types <- c( # note: "..." replaced by "dots"
-    "logical", "integer", "double", "complex", "character", "raw", "list", "NULL",
-    "closure", "special", "builtin", "environment", "S4", "symbol", "pairlist",
-    "promise", "language", "char", "any", "expression", "externalptr",
-    "bytecode",  "weakref", "dots"
-  )
-  if (!class %in% internal_types) choices <- c(choices, "next")
-  rlang::arg_match(constructor, choices)
-  constructor
+process_classes <- function(classes) {
+  if (!length(classes)) return(NULL)
+  classes <- setdiff(classes, "*none*")
+  if ("*base*" %in% classes) {
+    base_packages <- c("base", "utils", "stats", "methods")
+    classes <- setdiff(c(classes, unlist(all_classes[base_packages])), "*base*")
+  }
+  exclude <- classes[startsWith(classes, "-")]
+  include <- setdiff(classes, exclude)
+  if (length(exclude)) {
+    exclude <- sub("^-", "", exclude)
+    packages_lgl <- grepl("^\\{.*\\}$", exclude)
+    package_nms <- sub("^\\{(.*)\\}$", "\\1", exclude[packages_lgl])
+    exclude <- unique(c(exclude[!packages_lgl], unlist(all_classes[package_nms])))
+  }
+  if (!length(include)) return(c("-", exclude))
+  packages_lgl <- grepl("^\\{.*\\}$", include)
+  package_nms <- sub("^\\{(.*)\\}$", "\\1", include[packages_lgl])
+  include <- unique(c(all_classes[[1]], include[!packages_lgl], unlist(all_classes[package_nms])))
+  include
 }
+
+# cat(sprintf('"%s"', sub("^opts_", "", ls(envir = asNamespace("constructive"), pattern = "^opts_"))), sep = ",\n")
+all_classes <- list(
+  c(
+    ## low level classes that we can't remove
+    "array",
+    "character",
+    "complex",
+    "dots",
+    "double",
+    "environment",
+    "expression",
+    "externalptr",
+    "function",
+    "integer",
+    "language",
+    "list",
+    "logical",
+    "NULL",
+    "pairlist",
+    "raw",
+    "S4",
+    "weakref"
+  ),
+  base = c(
+    "AsIs",
+    "data.frame",
+    "Date",
+    "difftime",
+    "error",
+    "factor",
+    "formula",
+    "hexmode",
+    "matrix",
+    "noquote",
+    "numeric_version",
+    "octmode",
+    "ordered",
+    "package_version",
+    "POSIXct",
+    "POSIXlt",
+    "R_system_version",
+    "simpleCondition",
+    "simpleError",
+    "simpleMessage",
+    "simpleUnit",
+    "simpleWarning",
+    "warning"
+  ),
+  utils = c(
+    "bibentry",
+    "citationFooter",
+    "citationHeader",
+    "person"
+  ),
+  stats = c(
+    "mts",
+    "ts"
+  ),
+  methods = c(
+    "classGeneratorFunction",
+    "classPrototypeDef",
+    "classRepresentation"
+  ),
+  bit64 = c("integer64"),
+  blob = c(
+    "blob"
+  ),
+  ggplot2 = c(
+    "CoordCartesian",
+    "CoordFixed",
+    "CoordFlip",
+    "CoordMap",
+    "CoordMunch",
+    "CoordPolar",
+    "CoordQuickmap",
+    "CoordSf",
+    "CoordTrans",
+    "element_blank",
+    "element_grob",
+    "element_line",
+    "element_rect",
+    "element_render",
+    "element_text",
+    "FacetWrap",
+    "ggplot",
+    "ggproto",
+    "labels",
+    "Layer",
+    "margin",
+    "rel",
+    "Scale",
+    "ScalesList",
+    "theme",
+    "uneval",
+    "waiver"
+  ),
+  data.table = c("data.table"),
+  dm = c("dm"),
+  dplyr = c(
+    "grouped_df",
+    "rowwise_df"
+  ),
+  rlang = c(
+    "quosure",
+    "quosures"
+  ),
+  tibble = c("tbl_df"),
+  vctrs = c("vctrs_list_of")
+)

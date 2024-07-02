@@ -30,6 +30,7 @@ test_that("list", {
     construct(x2, opts_list(trim = 2, fill = "+"))
     construct(x2, opts_list(trim = 2, fill = "none"))
     construct(x2, opts_list(trim = 2, fill = "..."))
+    construct(list("\U{430}" = 1))
   })
 
   corrupted_list <- structure(list(1), class = c("corrupted"))
@@ -37,7 +38,7 @@ test_that("list", {
   `[.corrupted` <- function(...) stop()
   `[[.corrupted` <- function(...) stop()
   expect_error(length(corrupted_list))
-  expect_pipe_snapshot({
+  expect_snapshot({
     construct(corrupted_list)
   })
 })

@@ -4,26 +4,23 @@
 \alias{opts_R_system_version}
 \title{Constructive options for R_system_version}
 \usage{
-opts_R_system_version(
-  constructor = c("R_system_version", "next", "atomic"),
-  ...
-)
+opts_R_system_version(constructor = c("R_system_version", "next", "list"), ...)
 }
 \arguments{
-\item{constructor}{String. Name of the function used to construct the environment.}
+\item{constructor}{String. Name of the function used to construct the object.}
 
-\item{...}{Should not be used. Forces passing arguments by name.}
+\item{...}{Additional options used by user defined constructors through the \code{opts} object}
 }
 \value{
-An object of class <constructive_options/constructive_options_environment>
+An object of class <constructive_options/constructive_options_R_system_version>
 }
 \description{
-Depending on \code{constructor}, we construct the environment as follows:
+Depending on \code{constructor}, we construct the object as follows:
 \itemize{
 \item \code{"R_system_version"} : We use \code{R_system_version()}
 \item \code{"next"} : Use the constructor for the next supported class. Call \code{.class2()}
 on the object to see in which order the methods will be tried. This will usually
-be equivalent to \code{"array"}
-\item \code{"atomic"} : We define as an atomic vector and repair attributes
+be equivalent to \code{"list"}
+\item \code{"list"} : We define as a list and repair attributes
 }
 }

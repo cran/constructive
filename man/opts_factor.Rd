@@ -5,14 +5,14 @@
 \title{Constructive options for class 'factor'}
 \usage{
 opts_factor(
-  constructor = c("factor", "as_factor", "new_factor", "next", "atomic"),
+  constructor = c("factor", "as_factor", "new_factor", "next", "integer"),
   ...
 )
 }
 \arguments{
-\item{constructor}{String. Name of the function used to construct the environment, see Details section.}
+\item{constructor}{String. Name of the function used to construct the object, see Details section.}
 
-\item{...}{Should not be used. Forces passing arguments by name.}
+\item{...}{Additional options used by user defined constructors through the \code{opts} object}
 }
 \value{
 An object of class <constructive_options/constructive_options_factor>
@@ -21,7 +21,7 @@ An object of class <constructive_options/constructive_options_factor>
 These options will be used on objects of class 'factor'.
 }
 \details{
-Depending on \code{constructor}, we construct the environment as follows:
+Depending on \code{constructor}, we construct the object as follows:
 \itemize{
 \item \code{"factor"} (default): Build the object using \code{factor()}, levels won't
 be defined explicitly if they are in alphabetical order (locale dependent!)
@@ -31,6 +31,6 @@ possible, i.e. when levels are defined in order of appearance in the vector. Oth
 always defined explicitly.
 \item \code{"next"} : Use the constructor for the next supported class. Call \code{.class2()}
 on the object to see in which order the methods will be tried.
-\item \code{"atomic"} : We define as an atomic vector and repair attributes.
+\item \code{"integer"} : We define as an integer vector and repair attributes.
 }
 }

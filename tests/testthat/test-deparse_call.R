@@ -1,5 +1,5 @@
 test_that("deparse_call()", {
-  expect_pipe_snapshot({
+  expect_snapshot({
     deparse_call(call("::", 1, 2), style = FALSE)
     deparse_call(call("::", "a", quote(b)), style = FALSE)
     deparse_call(call("::", quote(a), "b"), style = FALSE)
@@ -16,6 +16,7 @@ test_that("deparse_call()", {
     deparse_call(call("$", quote(a), quote(b)), style = FALSE)
     deparse_call(call("$", "a", 1), style = FALSE)
     deparse_call(call("$", 1, "b"), style = FALSE)
+    deparse_call(call("$"), style = FALSE)
     deparse_call(call("$"), style = FALSE)
     deparse_call(call(":", 1, 2, 3), style = FALSE)
     deparse_call(call(":", 1, 2), style = FALSE)
@@ -78,6 +79,16 @@ test_that("deparse_call()", {
   })
 
   expect_snapshot({
+    # the following line cannot be tested with testthat because of their own
+    # faulty deparsing
+    # deparse_call(quote(`=`(x, 1)))
+    deparse_call(quote(list(`=`(x, 1))))
+    deparse_call(quote((`=`(x, 1))))
+    deparse_call(quote(list(x = 1)))
+    deparse_call(quote({x = 1}))
+  })
+
+  expect_snapshot({
     deparse_call(quote({{x}}), style = FALSE) # proper tunnel
     deparse_call(quote({{1}}), style = FALSE) # not a symbol
     deparse_call(quote({{1}}), one_liner = TRUE, style = FALSE)
@@ -85,5 +96,33 @@ test_that("deparse_call()", {
     deparse_call('"', escape = TRUE)
     deparse_call("ü")
     deparse_call("ü", unicode_representation = "latin")
+  })
+
+  expect_snapshot({
+    deparse_call(quote(1 -> x <- 2))
+    deparse_call(quote(1 -> if(TRUE) 1))
+    deparse_call(quote(1 -> for(i in j) 1))
+    deparse_call(quote(1 -> while(TRUE) 1))
+    deparse_call(quote(1 -> repeat 1))
+  })
+
+  expect_snapshot({
+    construct(quote(`^`(`+`(a, b), c)))
+    construct(quote(`+`(`^`(a, b), c)))
+    construct(quote(`%in%`(`*`(a, b), c)))
+    construct(quote(`*`(`%in%`(a, b), c)))
+    construct(quote(`+`(`+`(1, 2), 4)))
+    construct(quote(`-`(1+2)))
+    construct(quote(`<-`(`<<-`(1, 2), 4)))
+    construct(quote(`+`(x, y)(z)))
+  })
+})
+
+test_that("deparse_call() for R >= 4.1", {
+  # Due to bypass.R
+  skip_if(base::`<`(getRversion(), "4.1"))
+  expect_snapshot({
+    deparse_call(quote(`🐶`), style = FALSE)
+    deparse_call(quote(`🐶`), unicode_representation = "unicode")
   })
 })

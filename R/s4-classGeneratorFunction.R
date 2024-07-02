@@ -1,5 +1,3 @@
-constructors$classGeneratorFunction <- new.env()
-
 #' Constructive options for class 'classGeneratorFunction'
 #'
 #' These options will be used on objects of class 'classGeneratorFunction'.
@@ -9,19 +7,15 @@ constructors$classGeneratorFunction <- new.env()
 #' @return An object of class <constructive_options/constructive_options_classGeneratorFunction>
 #' @export
 opts_classGeneratorFunction <- function(constructor = c("setClass"), ...) {
-  .cstr_combine_errors(
-    constructor <- .cstr_match_constructor(constructor, "classGeneratorFunction"),
-    check_dots_empty()
-  )
-  .cstr_options("classGeneratorFunction", constructor = constructor)
+  .cstr_options("classGeneratorFunction", constructor = constructor[[1]], ...)
 }
 
 #' @export
+#' @method .cstr_construct classGeneratorFunction
 .cstr_construct.classGeneratorFunction <- function(x, ...) {
-  opts <- .cstr_fetch_opts("classGeneratorFunction", ...)
+  opts <- list(...)$opts$classGeneratorFunction %||% opts_classGeneratorFunction()
   if (is_corrupted_classGeneratorFunction(x) || opts$constructor == "next") return(NextMethod())
-  constructor <- constructors$classGeneratorFunction[[opts$constructor]]
-  constructor(x, ...)
+  UseMethod(".cstr_construct.classGeneratorFunction", structure(NA, class = opts$constructor))
 }
 
 is_corrupted_classGeneratorFunction <- function(x) {
@@ -29,7 +23,9 @@ is_corrupted_classGeneratorFunction <- function(x) {
   !isS4(x)
 }
 
-constructors$classGeneratorFunction$setClass <- function(x, env, ...) {
+#' @export
+#' @method .cstr_construct.classGeneratorFunction setClass
+.cstr_construct.classGeneratorFunction.setClass <- function(x, env, ...) {
   # FIXME: what about multiple classes ? is this considered corrupted in S4 ?
   cl <- x@className
   if (

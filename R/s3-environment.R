@@ -1,6 +1,3 @@
-# see also environment_utils.R
-constructors$environment <- new.env()
-
 #' Constructive options for type 'environment'
 #'
 #' Environments use reference semantics, they cannot be copied.
@@ -19,6 +16,8 @@ constructors$environment <- new.env()
 #'   environment
 #' * Namespaces are constructed using `asNamespace("pkg")`
 #' * Package environments are constructed using `as.environment("package:pkg")`
+#' * "imports" environments are constructed with `parent.env(asNamespace("pkg"))`
+#' * "lazydata" environments are constructed with `getNamespaceInfo("pkg", "lazydata")`
 #'
 #' By default For other environments we use \pkg{constructive}'s function `constructive::.env()`, it fetches
 #'   the environment from its memory address and provides as additional information
@@ -62,39 +61,36 @@ constructors$environment <- new.env()
 #'  `emptyenv()`. `recurse` is ignored.
 #' * `"topenv"` : we construct `base::topenv(x)`, see `?topenv`. `recurse` is ignored.
 #'   This is the most accurate we can be when constructing only special environments.
-#'
-#' @section Predefine:
-#'
-#'  Building environments from scratch using the above methods can be verbose and
-#' sometimes redundant if and environment is used several times. One last option
-#' is to define the environments and their content above the object returning call,
-#' using placeholder names `..env.1..`, `..env.2..` etc. This is done by setting
-#' `predefine` to `TRUE`. `constructor` and `recurse` are ignored in that case.
-#'
-#' @param constructor String. Name of the function used to construct the environment, see **Constructors** section.
+#' * `"predefine"` : Building environments from scratch using the above methods
+#'   can be verbose, sometimes redundant and sometimes even impossible due to
+#'   circularity (e.g. an environment referencing itself).  With `"predefine"`
+#'   we define the environments and their content  above the object returning
+#'   call, using placeholder names `..env.1..`, `..env.2..` etc.
+#'   The caveat is that the created code won't be a single call
+#'   and will create objects in the workspace. `recurse` is ignored.
+#' @param constructor String. Name of the function used to construct the
+#'   environment, see **Constructors** section.
 #' @inheritParams opts_atomic
-#' @param recurse Boolean. Only considered if `constructor` is `"list2env"` or `"new_environment"`. Whether to
-#'   attempt to recreate all parent environments until a known environment is found,
-#'   if `FALSE` (the default) we will use `topenv()` to find a known ancestor to set as
-#'   the parent.
-#' @param predefine Boolean. Whether to define environments first. If `TRUE` `constructor` and `recurse`
-#'   are ignored. It circumvents the circularity, recursivity and redundancy issues of
-#'   other constructors. The caveat is that the created code won't be a single call
-#'   and will create objects in the workspace.
+#' @param recurse Boolean. Only considered if `constructor` is `"list2env"` or
+#'   `"new_environment"`. Whether to attempt to recreate all parent environments
+#'   until a known environment is found, if `FALSE` (the default) we will use
+#'    `topenv()` to find a known ancestor to set as the parent.
 #'
 #' @return An object of class <constructive_options/constructive_options_environment>
 #' @export
-opts_environment <- function(constructor = c(".env", "list2env", "as.environment", "new.env", "topenv", "new_environment"), ..., recurse = FALSE, predefine = FALSE) {
-  .cstr_combine_errors(
-    constructor <- .cstr_match_constructor(constructor, "environment"),
-    check_dots_empty(),
-    abort_not_boolean(recurse)
-  )
-  .cstr_options("environment", constructor = constructor, recurse = recurse, predefine = predefine)
+opts_environment <- function(constructor = c(".env", "list2env", "as.environment", "new.env", "topenv", "new_environment", "predefine"), ..., recurse = FALSE) {
+  if (isTRUE(list(...)$predefine)) {
+    msg <- "`predefine = TRUE` in `opts_environment()` is deprecated"
+    info <- "Use `constructor = \"predefine\"` instead."
+    rlang::warn(c(msg, i = info))
+    constructor <- "predefine"
+  }
+  .cstr_options("environment", constructor = constructor[[1]], ..., recurse = recurse)
 }
 
 #' @export
-.cstr_construct.environment <- function(x, ..., pipe = NULL, one_liner = FALSE) {
+#' @method .cstr_construct environment
+.cstr_construct.environment <- function(x, ...) {
   # The name of `asNamespace("pkg")` is always "pkg" and print as `<environment: namespace:pkg>`
   # The name of `as.environment("package:pkg")` is ALMOST always "package:pkg" and prints as
   #  `<environment: package:pkg>` + attributes
@@ -103,124 +99,146 @@ opts_environment <- function(constructor = c(".env", "list2env", "as.environment
   # This means `asNamespace("base")` (a.k.a. `.BaseNamespaceEnv`) and
   #   `as.environment("package:base")` (a.k.a. `baseenv()`) have the same name
   #   but are different. So we implement a workaround.
-  opts <- .cstr_fetch_opts("environment", ...)
+  opts <- list(...)$opts$environment %||% opts_environment()
   if (is_corrupted_environment(x)) return(NextMethod())
 
   # if we can match a special env, return it directly
   code <- construct_special_env(x)
   if (!is.null(code)) return(code)
 
-  null_parent <- is.null(parent.env(x))
-  # FIXME: what does this do ?
-  if (opts$predefine && !null_parent) {
-    special_envs <-  c(search(), "R_EmptyEnv", "R_GlobalEnv")
-    nm <- environmentName(x)
-    # construct only if not found
-    if (!(nm != "" && rlang::is_installed(nm)) && ! nm %in% globals$special_envs) {
-      code <- update_predefinition(envir = x, ..., pipe = pipe, one_liner = one_liner)
-      return(code)
-    }
-  }
-
-  if (null_parent) {
-    # according to error of `new.env(parent = NULL)` we should nopt find NULL
+  if (is.null(parent.env(x))) {
+    # according to error of `new.env(parent = NULL)` we should not find NULL
     # parents anymore, yet we do. In this case we force the use of `env` as a constructor
     # because it's the only one that can reproduce these objects.
-    constructor <- constructors$environment[["env"]]
+    .cstr_construct.environment.env(x, ...)
   } else {
-    constructor <- constructors$environment[[opts$constructor]]
+    UseMethod(".cstr_construct.environment", structure(NA, class = opts$constructor))
   }
-
-  constructor(x, ..., pipe = pipe, one_liner = one_liner, recurse = opts$recurse, predefine = opts$predefine)
 }
 
 is_corrupted_environment <- function(x) {
   !is.environment(x)
 }
 
-constructors$environment$.env <- function(x, ..., pipe, one_liner, recurse, predefine) {
+#' @export
+#' @method .cstr_construct.environment predefine
+.cstr_construct.environment.predefine <- function(x, ...) {
+  update_predefinition(envir = x, ...)
+}
+
+#' @export
+#' @method .cstr_construct.environment .env
+.cstr_construct.environment..env <- function(x, ...) {
+  opts <- list(...)$opts$environment %||% opts_environment()
   args <- c(
     list(env_memory_address(x), parents = fetch_parent_names(x)),
     attributes(x)
   )
+  if (environmentIsLocked(x)) args <- c(args, locked = TRUE)
   if (!length(args$parents)) args$parents <- NULL
-  code <- .cstr_apply(args, "constructive::.env", ..., pipe = pipe, one_liner = one_liner)
+  code <- .cstr_apply(args, "constructive::.env", ...)
   repair_attributes_environment(x, code, ...)
 }
 
-constructors$environment$list2env <- function(x, ..., pipe, one_liner, recurse, predefine) {
-  if (is.null(pipe)) {
-    if (getRversion() >= "4.2") {
-      pipe <- "base"
-    } else {
-      pipe <- "magrittr"
-    }
-  } else {
-    pipe <- rlang::arg_match(pipe, c("base", "magrittr"))
+#' @export
+#' @method .cstr_construct.environment list2env
+.cstr_construct.environment.list2env <- function(x, ...) {
+  opts <- list(...)$opts$environment %||% opts_environment()
+  if (contains_self_reference(
+    x,
+    check_parent = opts$recurse,
+    check_function_env = list(...)$opts$`function`$environment %||% TRUE,
+    # FIXME: this would be a very contrived corner case to have a corrupted
+    #   srcref containing environment self refs
+    check_srcref = FALSE # list(...)$opts$`function`$srcref %||% FALSE
+    )) {
+    abort_self_reference()
   }
 
-    if (!recurse) {
-      if (length(names(x))) {
-        code <- .cstr_apply(list(env2list(x), parent = topenv(x)), "list2env", ..., pipe = pipe, one_liner = one_liner)
-        return(repair_attributes_environment(x, code, ...))
-      }
-      code <- .cstr_apply(list(parent = topenv(x)), "new.env", ..., pipe = pipe, one_liner = one_liner)
+  if (!opts$recurse) {
+    if (length(names(x))) {
+      code <- .cstr_apply(list(env2list(x), parent = topenv(x)), "list2env", ...)
+      code <- apply_env_locks(x, code, ...)
       return(repair_attributes_environment(x, code, ...))
     }
-
-    placeholder <- get_pipe_placeholder(pipe)
-    lhs_code <- .cstr_construct(parent.env(x), ..., pipe = pipe, one_liner = one_liner)
-    if (length(names(x))) {
-      data_code <- .cstr_construct(env2list(x), ..., pipe = pipe, one_liner = one_liner)
-      rhs_code <- .cstr_apply(list(data_code, parent = placeholder), "list2env", ..., recurse = FALSE, pipe = pipe, one_liner = one_liner)
-      code <- .cstr_pipe(lhs_code, rhs_code, pipe = pipe, one_liner = one_liner)
-    } else {
-      rhs_code <- .cstr_apply(list(parent = placeholder), "new.env", ..., recurse = FALSE, pipe = pipe, one_liner = one_liner)
-      code <- .cstr_pipe(lhs_code, rhs_code, pipe = pipe, one_liner = one_liner)
-    }
-
-  repair_attributes_environment(x, code, ...)
-}
-
-constructors$environment$new_environment <- function(x, ..., pipe, one_liner, recurse, predefine) {
-  if (is.null(pipe)) {
-    if (getRversion() >= "4.2") {
-      pipe <- "base"
-    } else {
-      pipe <- "magrittr"
-    }
-  } else {
-    pipe <- rlang::arg_match(pipe, c("base", "magrittr"))
-  }
-
-  if (!recurse) {
-    if (length(names(x))) {
-      code <- .cstr_apply(list(env2list(x), parent = topenv(x)), "rlang::new_environment", ..., pipe = pipe, one_liner = one_liner)
-      return(repair_attributes_environment(x, code, ...))
-    }
-    code <- .cstr_apply(list(parent = topenv(x)), "rlang::new_environment", ..., pipe = pipe, one_liner = one_liner)
+    code <- .cstr_apply(list(parent = topenv(x)), "new.env", ...)
+    code <- apply_env_locks(x, code, ...)
     return(repair_attributes_environment(x, code, ...))
   }
 
-  placeholder <- get_pipe_placeholder(pipe)
-  lhs_code <- .cstr_construct(parent.env(x), ..., pipe = pipe, one_liner = one_liner)
+  placeholder <- get_pipe_placeholder(list(...)$pipe)
+  lhs_code <- .cstr_construct(parent.env(x), ...)
   if (length(names(x))) {
-    data_code <- .cstr_construct(env2list(x), ..., pipe = pipe, one_liner = one_liner)
-    rhs_code <- .cstr_apply(list(data_code, parent = placeholder), "rlang::new_environment", ..., recurse = FALSE, pipe = pipe, one_liner = one_liner)
-    code <- .cstr_pipe(lhs_code, rhs_code, pipe = pipe, one_liner = one_liner)
+    data_code <- .cstr_construct(env2list(x), ...)
+    rhs_code <- .cstr_apply(list(data_code, parent = placeholder), "list2env", ..., recurse = FALSE)
+    code <- .cstr_pipe(lhs_code, rhs_code, ...)
   } else {
-    rhs_code <- .cstr_apply(list(parent = placeholder), "rlang::new_environment", ..., recurse = FALSE, pipe = pipe, one_liner = one_liner)
-    code <- .cstr_pipe(lhs_code, rhs_code, pipe = pipe, one_liner = one_liner)
+    rhs_code <- .cstr_apply(list(parent = placeholder), "new.env", ..., recurse = FALSE)
+    code <- .cstr_pipe(lhs_code, rhs_code, ...)
   }
-  repair_attributes_environment(x, code, ..., pipe = pipe, one_liner = one_liner)
+  code <- apply_env_locks(x, code)
+  repair_attributes_environment(x, code, ...)
 }
 
-constructors$environment$new.env <- function(x, ..., pipe, one_liner, recurse, predefine) {
+#' @export
+#' @method .cstr_construct.environment new_environment
+.cstr_construct.environment.new_environment <- function(x, ...) {
+  opts <- list(...)$opts$environment %||% opts_environment()
+  if (contains_self_reference(
+    x,
+    check_parent = opts$recurse,
+    check_function_env = list(...)$opts$`function`$environment %||% TRUE,
+    # FIXME: this would be a very contrived corner case to have a corrupted
+    #   srcref containing environment self refs
+    check_srcref = FALSE # list(...)$opts$`function`$srcref %||% FALSE
+  )) {
+    abort_self_reference()
+  }
+  if (!opts$recurse) {
+    if (length(names(x))) {
+      code <- .cstr_apply(list(env2list(x), parent = topenv(x)), "rlang::new_environment", ...)
+      code <- apply_env_locks(x, code)
+      return(repair_attributes_environment(x, code, ...))
+    }
+    code <- .cstr_apply(list(parent = topenv(x)), "rlang::new_environment", ...)
+    code <- apply_env_locks(x, code)
+    return(repair_attributes_environment(x, code, ...))
+  }
+
+  placeholder <- get_pipe_placeholder(list(...)$pipe)
+  lhs_code <- .cstr_construct(parent.env(x), ...)
+  if (length(names(x))) {
+    data_code <- .cstr_construct(env2list(x), ...)
+    rhs_code <- .cstr_apply(list(data_code, parent = placeholder), "rlang::new_environment", ..., recurse = FALSE)
+    code <- .cstr_pipe(lhs_code, rhs_code, ...)
+  } else {
+    rhs_code <- .cstr_apply(list(parent = placeholder), "rlang::new_environment", ..., recurse = FALSE)
+    code <- .cstr_pipe(lhs_code, rhs_code, ...)
+  }
+  code <- apply_env_locks(x, code)
+  repair_attributes_environment(x, code, ...)
+}
+
+#' @export
+#' @method .cstr_construct.environment new.env
+.cstr_construct.environment.new.env <- function(x, ...) {
   code <- "new.env()"
   repair_attributes_environment(x, code, ...)
 }
 
-constructors$environment$as.environment <- function(x, ..., pipe, one_liner, recurse, predefine) {
+#' @export
+#' @method .cstr_construct.environment as.environment
+.cstr_construct.environment.as.environment <- function(x, ...) {
+  if (contains_self_reference(
+    x,
+    check_parent = FALSE,
+    check_function_env = list(...)$opts$`function`$environment %||% TRUE,
+    # FIXME: this would be a very contrived corner case to have a corrupted
+    #   srcref containing environment self refs
+    check_srcref = FALSE # list(...)$opts$`function`$srcref %||% FALSE
+  )) {
+    abort_self_reference()
+  }
   # We need to use as.list.environment() (via env2list()) because as.list() will only map
   # to as.list.environment() if class was not overriden
   code <- .cstr_wrap(
@@ -228,18 +246,20 @@ constructors$environment$as.environment <- function(x, ..., pipe, one_liner, rec
     "as.environment",
     new_line = FALSE
   )
+  code <- apply_env_locks(x, code)
   repair_attributes_environment(x, code, ...)
 }
 
-constructors$environment$topenv <- function(x, ..., pipe, one_liner, recurse, predefine) {
+#' @export
+#' @method .cstr_construct.environment topenv
+.cstr_construct.environment.topenv <- function(x, ...) {
   code <- .cstr_construct(topenv(x), ...)
   code
 }
 
-repair_attributes_environment <- function(x, code, ..., pipe = NULL) {
-  opts <- .cstr_fetch_opts("environment", ...)
-  constructor <- opts$constructor
-  if (constructor == "env" ||
+repair_attributes_environment <- function(x, code, ...) {
+  opts <- list(...)$opts$environment %||% opts_environment()
+  if (opts$constructor == ".env" ||
       grepl("^asNamespace\\(\"[^\"]+\"\\)", code[[1]]) ||
       code[[1]] %in% c("baseenv()", "emptyenv()", ".GlobalEnv", ".BaseNamespaceEnv")
   ) {
@@ -250,11 +270,10 @@ repair_attributes_environment <- function(x, code, ..., pipe = NULL) {
   pkg_env_lgl <- grepl("as.environment\\(\"[^\"]+\"\\)", code[[1]])
   .cstr_repair_attributes(
     x, code, ...,
-    pipe = pipe,
     ignore = c(
       # pkg:fun envs have name and path attributes already set by `as.environment()`
       if (pkg_env_lgl) c("name", "path"),
-      if (opts$predefine) "class"
+      if (opts$constructor == "predefine") "class"
     )
   )
 }

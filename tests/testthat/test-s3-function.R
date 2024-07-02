@@ -1,5 +1,5 @@
 test_that("function", {
-  expect_pipe_snapshot({
+  expect_snapshot({
     f1 <- as.function(alist(x=, x), .GlobalEnv)
     f2 <- as.function(alist(x=, {x}), .GlobalEnv)
 
@@ -62,6 +62,7 @@ test_that("function", {
     body(f7) <- structure(body(f7), some_attr = "hello")
     construct(f7, opts_function(environment = FALSE))
 
+    construct(as.function(list(a=list(), quote(a)), envir = .GlobalEnv))
   })
 })
 

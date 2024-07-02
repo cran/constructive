@@ -1,8 +1,36 @@
 #' @export
+#' @rdname other-opts
+opts_Scale <- function(constructor = c("default", "next", "environment"), ...) {
+  .cstr_options("CoordCartesian", constructor = constructor[[1]], ...)
+}
+
+#' @export
+#' @method .cstr_construct Scale
 .cstr_construct.Scale <- function(x, ...) {
+  opts <- list(...)$opts$Scale %||% opts_CoordCartesian()
+  if (is_corrupted_Scale(x) || opts$constructor == "next") return(NextMethod())
+  UseMethod(".cstr_construct.Scale", structure(NA, class = opts$constructor))
+}
+
+is_corrupted_Scale <- function(x) {
+  # TODO
+  FALSE
+}
+
+#' @export
+#' @method .cstr_construct.Scale environment
+.cstr_construct.Scale.environment <- function(x, ...) {
+  .cstr_construct.environment(x, ...)
+}
+
+#' @export
+#' @method .cstr_construct.Scale default
+.cstr_construct.Scale.default <- function(x, ...) {
   # fetch caller and args from original call
-  caller <- x$call[[1]]
-  args <- as.list(x$call)[-1]
+  # here we need the ggplot subsetting method, not the low level [[
+  call <- base::`[[`(x, "call")
+  caller <- base::`[[`(x, "call")[[1]]
+  args <- as.list(call)[-1]
   fun_chr <- rlang::expr_deparse(caller)
   # the caller might be in the form pkg::fun
   fun_val <- eval(caller, asNamespace("ggplot2"))
@@ -58,7 +86,7 @@
   }
 
   # construct values, except for `super` and `palette` that we handle specifically after
-  args[names(values)] <- lapply(values, .cstr_construct, ...)
+  args[names(values)] <- lapply(values, function(x, ...) .cstr_construct(x, ...), ...)
 
   # special case waiver as it's an empty list unfortunately matched to `.data`
   # FIXME: we should probably not match empty objects, that inclused NULL and zero length objects
@@ -92,5 +120,9 @@
   ## build call
   if (!startsWith(fun_chr, "ggplot2::")) fun_chr <- paste0("ggplot2::", fun_chr)
   .cstr_apply(args, fun = fun_chr, recurse = FALSE, ...)
+}
+
+repair_attributes_Scale <- function(x, code, ...) {
+  code
 }
 

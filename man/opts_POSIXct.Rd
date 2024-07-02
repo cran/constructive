@@ -12,20 +12,20 @@ opts_POSIXct(
 )
 }
 \arguments{
-\item{constructor}{String. Name of the function used to construct the environment, see Details section.}
+\item{constructor}{String. Name of the function used to construct the object, see Details section.}
 
-\item{...}{Should not be used. Forces passing arguments by name.}
+\item{...}{Additional options used by user defined constructors through the \code{opts} object}
 
 \item{origin}{Origin to be used, ignored when irrelevant.}
 }
 \value{
-An object of class <constructive_options/constructive_options_factor>
+An object of class <constructive_options/constructive_options_POSIXct>
 }
 \description{
 These options will be used on objects of class 'POSIXct'.
 }
 \details{
-Depending on \code{constructor}, we construct the environment as follows:
+Depending on \code{constructor}, we construct the object as follows:
 \itemize{
 \item \code{"as.POSIXct"} (default): Build the object using a \code{as.POSIXct()} call on a
 character vector.
@@ -36,4 +36,8 @@ a character vector.
 on the object to see in which order the methods will be tried.
 \item \code{"atomic"} : We define as an atomic vector and repair attributes.
 }
+
+If the data is not appropriate for a constructor we fall back to another one
+appropriately. In particular corrupted POSIXct objects such as those defined
+on top of integers (or worse) are all constructed with the \code{".POSIXct"} constructor.
 }

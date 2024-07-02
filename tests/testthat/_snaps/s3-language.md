@@ -23,6 +23,17 @@
     Output
       quote(expr = )
 
+# language after 4.1
+
+    Code
+      construct(quote(`🐶`))
+    Output
+      quote(`\xf0\x9f\x90\xb6`)
+    Code
+      construct(quote(`🐶`), unicode_representation = "unicode")
+    Output
+      quote(`🐶`)
+
 # complex language
 
     Code
