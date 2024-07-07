@@ -1,6 +1,6 @@
 Package: constructive
 Title: Display Idiomatic Code to Construct Most R Objects
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: 
     c(person(given = "Antoine",
              family = "Fabri",
@@ -28,9 +28,9 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 RoxygenNote: 7.3.2
 NeedsCompilation: yes
-Packaged: 2024-07-02 19:49:29 UTC; Antoine
+Packaged: 2024-07-06 22:12:50 UTC; Antoine
 Author: Antoine Fabri [aut, cre],
   Kirill Müller [ctb] (<https://orcid.org/0000-0002-1416-3412>)
 Maintainer: Antoine Fabri <antoine.fabri@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-07-02 21:10:02 UTC
+Date/Publication: 2024-07-07 09:40:02 UTC
