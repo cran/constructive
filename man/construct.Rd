@@ -150,8 +150,8 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_CoordQuickmap]{opts_CoordQuickmap}(constructor = c("coord_quickmap", "next", "environment"), ...)}
   \item \code{\link[=opts_CoordSf]{opts_CoordSf}(constructor = c("coord_sf", "next", "environment"), ...)}
   \item \code{\link[=opts_CoordTrans]{opts_CoordTrans}(constructor = c("coord_trans", "next", "environment"), ...)}
-  \item \code{\link[=opts_data.frame]{opts_data.frame}(constructor = c("data.frame", "read.table", "next", "list"), ...)}
-  \item \code{\link[=opts_data.table]{opts_data.table}(constructor = c("data.table", "next", "list"), ..., selfref = FALSE)}
+  \item \code{\link[=opts_data.frame]{opts_data.frame}(constructor = c("data.frame", "read.table", "next", "list"), ..., recycle = TRUE)}
+  \item \code{\link[=opts_data.table]{opts_data.table}(constructor = c("data.table", "next", "list"), ..., selfref = FALSE, recycle = TRUE)}
   \item \code{\link[=opts_Date]{opts_Date}(constructor = c("as.Date", "as_date", "date", "new_date", "as.Date.numeric", "as_date.numeric", "next", "double"), ..., origin = "1970-01-01")}
   \item \code{\link[=opts_difftime]{opts_difftime}(constructor = c("as.difftime", "next"), ...)}
   \item \code{\link[=opts_dm]{opts_dm}(constructor = c("dm", "next", "list"), ...)}
@@ -183,7 +183,7 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_list]{opts_list}(constructor = c("list", "list2"), ..., trim = NULL, fill = c("vector", "new_list", "+", "...", "none"))}
   \item \code{\link[=opts_logical]{opts_logical}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
   \item \code{\link[=opts_margin]{opts_margin}(constructor = c("margin", "next", "double"), ...)}
-  \item \code{\link[=opts_matrix]{opts_matrix}(constructor = c("matrix", "array", "next"), ...)}
+  \item \code{\link[=opts_matrix]{opts_matrix}(constructor = c("matrix", "array", "cbind", "rbind", "next"), ...)}
   \item \code{\link[=opts_mts]{opts_mts}(constructor = c("ts", "next", "atomic"), ...)}
   \item \code{\link[=opts_noquote]{opts_noquote}(constructor = c("noquote", "next"), ...)}
   \item \code{\link[=opts_NULL]{opts_NULL}(constructor = "NULL", ...)}
@@ -198,6 +198,8 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_quosure]{opts_quosure}(constructor = c("new_quosure", "next", "language"), ...)}
   \item \code{\link[=opts_quosures]{opts_quosures}(constructor = c("new_quosures", "next", "list"), ...)}
   \item \code{\link[=opts_R_system_version]{opts_R_system_version}(constructor = c("R_system_version", "next", "list"), ...)}
+  \item \code{\link[=opts_R6]{opts_R6}(constructor = c("R6Class", "next"), ...)}
+  \item \code{\link[=opts_R6ClassGenerator]{opts_R6ClassGenerator}(constructor = c("R6Class", "next"), ...)}
   \item \code{\link[=opts_raw]{opts_raw}(constructor = c("as.raw", "charToRaw"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE, representation = c("hexadecimal", "decimal"))}
   \item \code{\link[=opts_rel]{opts_rel}(constructor = c("rel", "next", "double"), ...)}
   \item \code{\link[=opts_rowwise_df]{opts_rowwise_df}(constructor = c("default", "next", "list"), ...)}
@@ -209,7 +211,7 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_simpleMessage]{opts_simpleMessage}(constructor = c("simpleMessage", "next"), ...)}
   \item \code{\link[=opts_simpleUnit]{opts_simpleUnit}(constructor = c("unit", "next", "double"), ...)}
   \item \code{\link[=opts_simpleWarning]{opts_simpleWarning}(constructor = c("simpleWarning", "next"), ...)}
-  \item \code{\link[=opts_tbl_df]{opts_tbl_df}(constructor = c("tibble", "tribble", "next", "list"), ..., trailing_comma = TRUE, justify = c("left", "right", "centre", "none"))}
+  \item \code{\link[=opts_tbl_df]{opts_tbl_df}(constructor = c("tibble", "tribble", "next", "list"), ..., trailing_comma = TRUE, justify = c("left", "right", "centre", "none"), recycle = TRUE)}
   \item \code{\link[=opts_theme]{opts_theme}(constructor = c("theme", "next", "list"), ...)}
   \item \code{\link[=opts_ts]{opts_ts}(constructor = c("ts", "next", "atomic"), ...)}
   \item \code{\link[=opts_uneval]{opts_uneval}(constructor = c("aes", "next", "list"), ...)}
@@ -217,6 +219,11 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_waiver]{opts_waiver}(constructor = c("waiver", "next", "list"), ...)}
   \item \code{\link[=opts_warning]{opts_warning}(constructor = c("warningCondition", "next"), ...)}
   \item \code{\link[=opts_weakref]{opts_weakref}(constructor = c("new_weakref"), ...)}
+  \item \code{\link[=opts_xts]{opts_xts}(constructor = c("as.xts.matrix", "next"), ...)}
+  \item \code{\link[=opts_yearmon]{opts_yearmon}(constructor = c("as.yearmon", "yearmon", "next"), ...)}
+  \item \code{\link[=opts_yearqtr]{opts_yearqtr}(constructor = c("as.yearqtr", "yearqtr", "next"), ...)}
+  \item \code{\link[=opts_zoo]{opts_zoo}(constructor = c("zoo", "next"), ...)}
+  \item \code{\link[=opts_zooreg]{opts_zooreg}(constructor = c("zooreg", "next"), ...)}
 }
 }
 

@@ -4,7 +4,7 @@
 \alias{opts_matrix}
 \title{Constructive options for matrices}
 \usage{
-opts_matrix(constructor = c("matrix", "array", "next"), ...)
+opts_matrix(constructor = c("matrix", "array", "cbind", "rbind", "next"), ...)
 }
 \arguments{
 \item{constructor}{String. Name of the function used to construct the object.}
@@ -23,6 +23,8 @@ Depending on \code{constructor}, we construct the object as follows:
 \itemize{
 \item \code{"matrix"} : We use \code{matrix()}
 \item \code{"array"} : We use \code{array()}
+\item \code{"cbind"},\code{"rbind"} : We use \code{cbind()} or \code{"rbind()"}, this makes named
+columns and rows easier to read.
 \item \code{"next"} : Use the constructor for the next supported class. Call \code{.class2()}
 on the object to see in which order the methods will be tried. This will usually
 be equivalent to \code{"array"}

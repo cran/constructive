@@ -13,11 +13,14 @@
 #' * `"list"` : Use `list()` and treat the class as a regular attribute.
 #'
 #' @param constructor String. Name of the function used to construct the object, see Details section.
+#' @param recycle Boolean. For the `"data.frame"` constructor. Whether to recycle
+#'   scalars to compress the output.
 #' @inheritParams opts_atomic
 #' @return An object of class <constructive_options/constructive_options_data.frame>
 #' @export
-opts_data.frame <- function(constructor = c("data.frame", "read.table", "next", "list"), ...) {
-  .cstr_options("data.frame", constructor = constructor[[1]], ...)
+opts_data.frame <- function(constructor = c("data.frame", "read.table", "next", "list"), ..., recycle = TRUE) {
+  abort_not_boolean(recycle)
+  .cstr_options("data.frame", constructor = constructor[[1]], ..., recycle = recycle)
 }
 
 #' @export
@@ -125,13 +128,35 @@ align_numerics <- function(x) {
 #' @export
 #' @method .cstr_construct.data.frame data.frame
 .cstr_construct.data.frame.data.frame <- function(x, ...) {
+  opts <- list(...)$opts$data.frame %||% opts_data.frame()
   # Fall back on list constructor if relevant
   df_has_list_cols <- any(sapply(x, function(col) is.list(col) && !inherits(col, "AsIs")))
+  if (df_has_list_cols) return(.cstr_construct.list(x, ...))
   arg_names <- c("row.names", "check.rows", "check.names", "fix.empty.names", "stringsAsFactors")
-  df_has_problematic_names <- any(names(x) %in% arg_names)
-  if (df_has_list_cols || df_has_problematic_names) return(.cstr_construct.list(x, ...))
-
+  problematic_names_lgl <- names(x) %in% c(arg_names, "", NA)
+  repair_names <- any(problematic_names_lgl)
   args <- x
+  if (repair_names) names(args)[problematic_names_lgl] <- ""
+
+  # recycle value for constant columns
+  if (opts$recycle && nrow(x) > 1 && ncol(x) > 1) {
+    # recycling depends on S3 subsetting so we can't be general here, but we might
+    # extend this list
+    # note : "POSIXlt" is coerced to "POSIXct" in data.frame so not relevant here
+    recyclable_classes <-
+      list(NULL, "factor", c("ordered", "factor"), "Date", c("POSIXct", "POSIXt"))
+    args <- lapply(args, function(x) {
+      if (
+        any(sapply(recyclable_classes, identical, oldClass(x))) &&
+        length(unique(x)) == 1 # &&
+        # !anyDuplicated(names(x)) # not necessary for data frames, but yes for tibble
+      ) {
+        return(base::`[`(x, 1))
+      }
+      x
+    })
+    if (all(lengths(args) == 1)) args[1] <- x[1]
+  }
 
   # include row.names arg only if necessary
   rn <- attr(x, "row.names")
@@ -142,13 +167,15 @@ align_numerics <- function(x) {
   if (!ncol(x) || !identical(rn, seq_len(nrow(x)))) args <- c(args, list(row.names = rn))
 
   # include check.names arg only if necessary
-  if (any(!is_syntactic(names(x)))) args <- c(args, list(check.names = FALSE))
+  if (!any(names(x) %in% c("", NA)) && (any(!is_syntactic(names(x))) || anyDuplicated(names(x)))) {
+    args <- c(args, list(check.names = FALSE))
+  }
 
   # build code recursively
   code <- .cstr_apply(args, fun = "data.frame", ...)
 
   # repair
-  repair_attributes_data.frame(x, code, ...)
+  repair_attributes_data.frame(x, code, ..., repair_names = repair_names)
 }
 
 repair_attributes_data.frame <- function(x, code, ..., pipe = NULL) {

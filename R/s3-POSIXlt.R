@@ -34,20 +34,32 @@ is_corrupted_POSIXlt <- function(x) {
 #' @export
 #' @method .cstr_construct.POSIXlt as.POSIXlt
 .cstr_construct.POSIXlt.as.POSIXlt <- function(x, ...) {
-  if (with_versions(R < "4.3.0")) {
-    gmtoff <- .subset2(x, "gmtoff")
-    from_posixct <- !is.null(gmtoff) && !all(is.na(gmtoff))
-    if (from_posixct) {
+  gmtoff <- .subset2(x, "gmtoff")
+  tzone <- attr(x, "tzone")
+  from_posixct_pre_4.3 <-
+    with_versions(R < "4.3.0") &&
+    !is.null(gmtoff) &&
+    !all(is.na(gmtoff))
+
+  from_posixct_from_4.3 <-
+    !is.null(gmtoff) &&
+    !all(is.na(gmtoff)) &&
+    !identical(tzone, "UTC") &&
+    !identical(tzone, "GMT")
+
+  from_posixct <- from_posixct_pre_4.3 || from_posixct_from_4.3
+  if (from_posixct) {
       code_posixct <- .cstr_construct(as.POSIXct(x), ...)
       code <- .cstr_wrap(code_posixct, "as.POSIXlt", new_line = FALSE)
       return(repair_attributes_POSIXlt(x, code, ...))
-    }
   }
-  tzone <- attr(x, "tzone")
+
   x_chr <- format(x)
   split_s <- as.numeric(x) %% 1
   dec_lgl <- split_s != 0 & !is.na(x)
-  x_chr[dec_lgl] <- paste0(x_chr[dec_lgl], sub("^0", "", format(split_s[dec_lgl], digits = 5)))
+  dec_seconds <- vapply(strip(x)$sec[dec_lgl], .cstr_construct, character(1))
+  dec_seconds <- sub("^.*(\\..*)", "\\1", dec_seconds)
+  x_chr[dec_lgl] <- paste0(x_chr[dec_lgl], dec_seconds)
   args <- list(x_chr)
   if (!is.null(tzone) && length(tzone) == 1) {
     args <- c(args, list(tz = tzone))

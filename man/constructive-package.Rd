@@ -6,6 +6,8 @@
 \alias{constructive-package}
 \title{constructive: Display Idiomatic Code to Construct Most R Objects}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Prints code that can be used to recreate R objects. In a sense it is similar to 'base::dput()' or 'base::deparse()' but 'constructive' strives to use idiomatic constructors.
 }
 \seealso{
@@ -23,6 +25,7 @@ Useful links:
 Other contributors:
 \itemize{
   \item Kirill Müller \email{kirill@cynkra.com} (\href{https://orcid.org/0000-0002-1416-3412}{ORCID}) [contributor]
+  \item Jacob Scott \email{jscott2718@gmail.com} [contributor]
 }
 
 }

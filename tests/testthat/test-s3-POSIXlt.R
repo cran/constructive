@@ -23,6 +23,7 @@ test_that("POSIXlt-all-versions", {
     construct(as.POSIXlt("2022-01-01 01:00:00", tz = "UTC"))
     construct(as.POSIXlt("2022-01-01 01:00:00.1", tz = "GMT"))
     construct(as.POSIXlt(c("2022-01-01 01:00:00.1", NA), tz = "GMT"))
+    construct(as.POSIXlt(c("2024-07-22 13:25:22.868974", "2024-07-22 13:25:22.868976"), tz = "UTC"))
   })
 })
 
@@ -45,6 +46,16 @@ test_that("POSIXlt-from-4.3", {
   sys_time_1970 <- Sys.time()
   sys_time_1970[[1]] <- 0
   expect_snapshot({
+    construct(as.POSIXlt(.leap.seconds[1:4]), opts_POSIXlt("next"))
+    construct(as.POSIXlt(.leap.seconds[1:4]), opts_POSIXlt("list"))
+  })
+
+  withr::local_timezone("CET")
+  sys_time_1970 <- Sys.time()
+  sys_time_1970[[1]] <- 0
+  expect_snapshot({
+    construct(as.POSIXlt(.leap.seconds[1:4]))
+    construct(as.POSIXlt(sys_time_1970))
     construct(as.POSIXlt(.leap.seconds[1:4]), opts_POSIXlt("next"))
     construct(as.POSIXlt(.leap.seconds[1:4]), opts_POSIXlt("list"))
   })

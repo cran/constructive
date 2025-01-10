@@ -22,18 +22,20 @@ construct(letters)
 }
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  opts_Date <- function(
-#      constructor = c(
-#        "as.Date", "as_date", "date", "new_date", "as.Date.numeric", "as_date.numeric", "next", "double"),
-#      ...,
-#      origin = "1970-01-01") {
-#    .cstr_options("Date", constructor = constructor[[1]], ..., origin = origin)
-#  }
+# opts_Date <- function(
+#     constructor = c(
+#       "as.Date", "as_date", "date", "new_date", "as.Date.numeric", "as_date.numeric", "next", "double"),
+#     ...,
+#     origin = "1970-01-01") {
+#   .cstr_options("Date", constructor = constructor[[1]], ..., origin = origin)
+# }
 
 ## ----error = TRUE-------------------------------------------------------------
+try({
 x <- structure("12345", class = "Date")
 x
 x + 1
+})
 
 ## -----------------------------------------------------------------------------
 is_corrupted_Date <- function(x) {
