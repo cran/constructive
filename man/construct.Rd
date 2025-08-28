@@ -141,15 +141,17 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_classRepresentation]{opts_classRepresentation}(constructor = c("getClassDef"), ...)}
   \item \code{\link[=opts_complex]{opts_complex}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
   \item \code{\link[=opts_constructive_options]{opts_constructive_options}(constructor = c("opts", "next"), ...)}
-  \item \code{\link[=opts_CoordCartesian]{opts_CoordCartesian}(constructor = c("coord_cartesian", "next", "environment"), ...)}
+  \item \code{\link[=opts_CoordCartesian]{opts_CoordCartesian}(constructor = c("default", "coord_cartesian", "next", "environment"), ...)}
   \item \code{\link[=opts_CoordFixed]{opts_CoordFixed}(constructor = c("coord_fixed", "next", "environment"), ...)}
   \item \code{\link[=opts_CoordFlip]{opts_CoordFlip}(constructor = c("coord_flip", "next", "environment"), ...)}
   \item \code{\link[=opts_CoordMap]{opts_CoordMap}(constructor = c("coord_map", "next", "environment"), ...)}
   \item \code{\link[=opts_CoordMunch]{opts_CoordMunch}(constructor = c("coord_munch", "next", "environment"), ...)}
   \item \code{\link[=opts_CoordPolar]{opts_CoordPolar}(constructor = c("coord_polar", "next", "environment"), ...)}
   \item \code{\link[=opts_CoordQuickmap]{opts_CoordQuickmap}(constructor = c("coord_quickmap", "next", "environment"), ...)}
+  \item \code{\link[=opts_CoordRadial]{opts_CoordRadial}(constructor = c("coord_radial", "next"), ...)}
   \item \code{\link[=opts_CoordSf]{opts_CoordSf}(constructor = c("coord_sf", "next", "environment"), ...)}
   \item \code{\link[=opts_CoordTrans]{opts_CoordTrans}(constructor = c("coord_trans", "next", "environment"), ...)}
+  \item \code{\link[=opts_CoordTransform]{opts_CoordTransform}(constructor = c("coord_transform", "next"), ...)}
   \item \code{\link[=opts_data.frame]{opts_data.frame}(constructor = c("data.frame", "read.table", "next", "list"), ..., recycle = TRUE)}
   \item \code{\link[=opts_data.table]{opts_data.table}(constructor = c("data.table", "next", "list"), ..., selfref = FALSE, recycle = TRUE)}
   \item \code{\link[=opts_Date]{opts_Date}(constructor = c("as.Date", "as_date", "date", "new_date", "as.Date.numeric", "as_date.numeric", "next", "double"), ..., origin = "1970-01-01")}
@@ -163,17 +165,48 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_element_rect]{opts_element_rect}(constructor = c("element_rect", "next", "list"), ...)}
   \item \code{\link[=opts_element_render]{opts_element_render}(constructor = c("element_render", "next", "list"), ...)}
   \item \code{\link[=opts_element_text]{opts_element_text}(constructor = c("element_text", "next", "list"), ...)}
+  \item \code{\link[=opts_ellmer_TypeArray]{opts_ellmer_TypeArray}(constructor = c("type_array", "TypeArray", "next"), ...)}
+  \item \code{\link[=opts_ellmer_TypeBasic]{opts_ellmer_TypeBasic}(constructor = c("default", "TypeBasic", "next"), ...)}
+  \item \code{\link[=opts_ellmer_TypeEnum]{opts_ellmer_TypeEnum}(constructor = c("type_enum", "TypeEnum", "next"), ...)}
+  \item \code{\link[=opts_ellmer_TypeJsonSchema]{opts_ellmer_TypeJsonSchema}(constructor = c("type_from_schema", "TypeJsonSchema", "next"), ...)}
+  \item \code{\link[=opts_ellmer_TypeObject]{opts_ellmer_TypeObject}(constructor = c("type_object", "TypeObject", "next"), ...)}
   \item \code{\link[=opts_environment]{opts_environment}(constructor = c(".env", "list2env", "as.environment", "new.env", "topenv", "new_environment", "predefine"), ..., recurse = FALSE)}
   \item \code{\link[=opts_error]{opts_error}(constructor = c("errorCondition", "next"), ...)}
   \item \code{\link[=opts_expression]{opts_expression}(constructor = c("default"), ...)}
   \item \code{\link[=opts_externalptr]{opts_externalptr}(constructor = c("default"), ...)}
+  \item \code{\link[=opts_FacetGrid]{opts_FacetGrid}(constructor = c("facet_grid", "ggproto", "next", "environment"), ...)}
+  \item \code{\link[=opts_FacetNull]{opts_FacetNull}(constructor = c("facet_null", "next"), ...)}
   \item \code{\link[=opts_FacetWrap]{opts_FacetWrap}(constructor = c("facet_wrap", "ggproto", "next", "environment"), ...)}
   \item \code{\link[=opts_factor]{opts_factor}(constructor = c("factor", "as_factor", "new_factor", "next", "integer"), ...)}
   \item \code{\link[=opts_formula]{opts_formula}(constructor = c("default", "formula", "as.formula", "new_formula", "next"), ..., environment = TRUE)}
   \item \code{\link[=opts_function]{opts_function}(constructor = c("function", "as.function", "new_function"), ..., environment = TRUE, srcref = FALSE, trim = NULL)}
   \item \code{\link[=opts_ggplot]{opts_ggplot}(constructor = c("ggplot", "next", "list"), ...)}
-  \item \code{\link[=opts_ggproto]{opts_ggproto}(constructor = c("default", "next", "environment"), ...)}
+  \item \code{\link[=opts_ggplot2_element_blank]{opts_ggplot2_element_blank}(constructor = c("element_blank", "next"), ...)}
+  \item \code{\link[=opts_ggplot2_element_geom]{opts_ggplot2_element_geom}(constructor = c("element_geom", "next"), ...)}
+  \item \code{\link[=opts_ggplot2_element_line]{opts_ggplot2_element_line}(constructor = c("element_line", "next"), ...)}
+  \item \code{\link[=opts_ggplot2_element_point]{opts_ggplot2_element_point}(constructor = c("element_point", "next"), ...)}
+  \item \code{\link[=opts_ggplot2_element_polygon]{opts_ggplot2_element_polygon}(constructor = c("element_polygon", "next"), ...)}
+  \item \code{\link[=opts_ggplot2_element_rect]{opts_ggplot2_element_rect}(constructor = c("element_rect", "next"), ...)}
+  \item \code{\link[=opts_ggplot2_element_text]{opts_ggplot2_element_text}(constructor = c("element_text", "next"), ...)}
+  \item \code{\link[=opts_ggplot2_ggplot]{opts_ggplot2_ggplot}(constructor = c("ggplot", "next", "list"), ...)}
+  \item \code{\link[=opts_ggplot2_labels]{opts_ggplot2_labels}(constructor = c("labs", "next"), ...)}
+  \item \code{\link[=opts_ggplot2_mapping]{opts_ggplot2_mapping}(constructor = c("aes", "next", "list"), ...)}
+  \item \code{\link[=opts_ggplot2_margin]{opts_ggplot2_margin}(constructor = c("margin", "next", "double"), ...)}
+  \item \code{\link[=opts_ggplot2_theme]{opts_ggplot2_theme}(constructor = c("theme", "next", "list"), ...)}
+  \item \code{\link[=opts_ggproto]{opts_ggproto}(constructor = c("default", "ggproto", "next", "environment"), ...)}
   \item \code{\link[=opts_grouped_df]{opts_grouped_df}(constructor = c("default", "next", "list"), ...)}
+  \item \code{\link[=opts_Guide]{opts_Guide}(constructor = c("default", "next", "environment"), ...)}
+  \item \code{\link[=opts_GuideAxis]{opts_GuideAxis}(constructor = c("guide_axis", "next"), ...)}
+  \item \code{\link[=opts_GuideAxisLogticks]{opts_GuideAxisLogticks}(constructor = c("guide_axis_logticks", "next"), ...)}
+  \item \code{\link[=opts_GuideAxisStack]{opts_GuideAxisStack}(constructor = c("guide_axis_stack", "next"), ...)}
+  \item \code{\link[=opts_GuideAxisTheta]{opts_GuideAxisTheta}(constructor = c("guide_axis_theta", "next"), ...)}
+  \item \code{\link[=opts_GuideBins]{opts_GuideBins}(constructor = c("guide_bins", "next"), ...)}
+  \item \code{\link[=opts_GuideColourbar]{opts_GuideColourbar}(constructor = c("guide_colorbar", "next"), ...)}
+  \item \code{\link[=opts_GuideColoursteps]{opts_GuideColoursteps}(constructor = c("guide_colorsteps", "next"), ...)}
+  \item \code{\link[=opts_GuideCustom]{opts_GuideCustom}(constructor = c("guide_custom", "next"), ...)}
+  \item \code{\link[=opts_GuideLegend]{opts_GuideLegend}(constructor = c("guide_legend", "next"), ...)}
+  \item \code{\link[=opts_GuideNone]{opts_GuideNone}(constructor = c("guide_none", "next"), ...)}
+  \item \code{\link[=opts_Guides]{opts_Guides}(constructor = c("guides", "next"), ...)}
   \item \code{\link[=opts_hexmode]{opts_hexmode}(constructor = c("as.hexmode", "next"), ..., integer = FALSE)}
   \item \code{\link[=opts_integer]{opts_integer}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
   \item \code{\link[=opts_integer64]{opts_integer64}(constructor = c("as.integer64", "next", "double"), ...)}
@@ -188,6 +221,7 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_noquote]{opts_noquote}(constructor = c("noquote", "next"), ...)}
   \item \code{\link[=opts_NULL]{opts_NULL}(constructor = "NULL", ...)}
   \item \code{\link[=opts_numeric_version]{opts_numeric_version}(constructor = c("numeric_version", "next", "list"), ...)}
+  \item \code{\link[=opts_object]{opts_object}(constructor = c("prototype", "S7_object"), ...)}
   \item \code{\link[=opts_octmode]{opts_octmode}(constructor = c("as.octmode", "next"), ..., integer = FALSE)}
   \item \code{\link[=opts_ordered]{opts_ordered}(constructor = c("ordered", "factor", "new_ordered", "next", "integer"), ...)}
   \item \code{\link[=opts_package_version]{opts_package_version}(constructor = c("package_version", "next", "list"), ...)}
@@ -203,7 +237,16 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_raw]{opts_raw}(constructor = c("as.raw", "charToRaw"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE, representation = c("hexadecimal", "decimal"))}
   \item \code{\link[=opts_rel]{opts_rel}(constructor = c("rel", "next", "double"), ...)}
   \item \code{\link[=opts_rowwise_df]{opts_rowwise_df}(constructor = c("default", "next", "list"), ...)}
-  \item \code{\link[=opts_S4]{opts_S4}(constructor = c("new"), ...)}
+  \item \code{\link[=opts_S4]{opts_S4}(constructor = c("new", "prototype"), ...)}
+  \item \code{\link[=opts_S7_any]{opts_S7_any}(constructor = c("class_any", "next"), ...)}
+  \item \code{\link[=opts_S7_base_class]{opts_S7_base_class}(constructor = c("S7", "next"), ...)}
+  \item \code{\link[=opts_S7_class]{opts_S7_class}(constructor = c("new_class", "next"), ...)}
+  \item \code{\link[=opts_S7_external_generic]{opts_S7_external_generic}(constructor = c("new_external_generic", "next"), ...)}
+  \item \code{\link[=opts_S7_generic]{opts_S7_generic}(constructor = c("new_generic", "next"), ...)}
+  \item \code{\link[=opts_S7_object]{opts_S7_object}(constructor = c("S7_object", "next"), ...)}
+  \item \code{\link[=opts_S7_property]{opts_S7_property}(constructor = c("new_property", "next"), ...)}
+  \item \code{\link[=opts_S7_S3_class]{opts_S7_S3_class}(constructor = c("new_S3_class", "next"), ...)}
+  \item \code{\link[=opts_S7_union]{opts_S7_union}(constructor = c("default", "|", "new_union", "next"), ...)}
   \item \code{\link[=opts_Scale]{opts_Scale}(constructor = c("default", "next", "environment"), ...)}
   \item \code{\link[=opts_ScalesList]{opts_ScalesList}(constructor = c("ScalesList", "next", "list"), ...)}
   \item \code{\link[=opts_simpleCondition]{opts_simpleCondition}(constructor = c("simpleCondition", "next"), ...)}

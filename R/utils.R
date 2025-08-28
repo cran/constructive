@@ -176,12 +176,20 @@ scrub_ggplot <- function(x) {
   x
 }
 
+
+
 # Thanks to Zi Lin : https://stackoverflow.com/questions/75960769
 flatten.scales <- function(gg) {
   `$` <- base::`$`
   # take stock how many different scales are contained within the top-level
   # scale list, & sort their names alphabetically for consistency
-  orig.scales <-gg[["scales"]]
+  # FIXME: scrub new ggplot
+  if (with_versions(ggplot2 > "3.5.2")) {
+    orig.scales <- gg@scales
+  } else {
+    orig.scales <- gg[["scales"]]
+  }
+
   scale.count <-  orig.scales$n()
   scale.aesthetics <- lapply(seq_len(scale.count),
                              function(i) orig.scales$scales[[i]]$aesthetics)
@@ -211,7 +219,12 @@ flatten.scales <- function(gg) {
     new.scales$add(scale.to.add)
   }
 
-  gg[["scales"]] <- new.scales
+  if (with_versions(ggplot2 > "3.5.2")) {
+    gg@scales <- new.scales
+  } else {
+    gg[["scales"]] <- new.scales
+  }
+
   return(gg)
 }
 
@@ -242,6 +255,19 @@ trans_order <- function(x) {
   names(scales) <- rep("scales", n_scales)
 
   c(layers, scales)[order(c(layer_order, scale_order))]
+}
+
+compare_proxy_LayerInstance <- function(x, path) {
+
+  if (with_versions(ggplot2 > "3.5.2")) {
+    # remove computed elements before comparison
+    # we clone the env not to change it by reference
+    x <- rlang::env_clone(x)
+    if (exists("computed_geom_params", x)) rm("computed_geom_params", envir = x)
+    if (exists("computed_mapping", x)) rm("computed_mapping", envir = x)
+    if (exists("computed_stat_params", x)) rm("computed_stat_params", envir = x)
+  }
+  list(object = x, path = path)
 }
 
 compare_proxy_ggplot <- function(x, path) {
@@ -275,7 +301,10 @@ expect_faithful_ggplot_construction <- function(p, ...) {
 
 keep_only_non_defaults <- function(x, f) {
   fmls <- Filter(function(x) !identical(x, quote(expr=)), formals(f))
-  default_values <- lapply(fmls, eval, environment(f))
+  default_values <- lapply(fmls, function(arg) {
+    try(eval(arg, environment(f)), silent = TRUE)
+  })
+  default_values <- Filter(function(x) !inherits(x, "try-error"), default_values)
   for (nm in names(default_values)) {
     if (identical(x[[nm]], default_values[[nm]])) x[[nm]] <- NULL
   }
@@ -342,11 +371,11 @@ defaults_arg_values <- function(fun_val, pkg) {
   lapply(defaults_lng, eval, asNamespace(pkg))
 }
 
-highlight_if_prettycode_installed <- function(x, style = NULL) {
-  if (!is_installed("prettycode") || isFALSE(getOption("constructive_pretty"))) {
+highlight_code <- function(x, code_theme = NULL, colored = getOption("constructive_pretty", TRUE)) {
+  if (isFALSE(colored)) {
     return(x)
   }
-  prettycode::highlight(x, style = style %||% prettycode::default_style())
+  cli::code_highlight(x, code_theme)
 }
 
 strip <- function(x) {
@@ -381,4 +410,11 @@ user_env <- function() {
   i <- Position(function(x) identical(topenv(x), ns), envs)
   # sys.frames() doesn't contain .GlobalEnv
   parent.frame(length(envs) - i + 1)
+}
+
+compare_proxy_S7_object <- function(x, path) {
+  if (is.function(x)) {
+    x <- rlang::zap_srcref(x)
+  }
+  list(object = x, path = path)
 }
