@@ -398,7 +398,7 @@ functions <code>construct_base()</code> and
 <span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt;         UseMethod(&quot;.cstr_construct&quot;, structure(NA_integer_, class = cl))</span></span>
 <span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt;     }</span></span>
 <span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x10f4e0e88&gt;</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x129024400&gt;</span></span>
 <span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span>
 <span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co"># a character vector</span></span>
 <span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="fu">.cstr_construct</span>(letters)</span>
@@ -515,7 +515,7 @@ vector constructor:</p>
 <span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt;     code &lt;- .cstr_apply(list(format(x)), &quot;as.Date&quot;, ..., new_line = FALSE)</span></span>
 <span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt;     repair_attributes_Date(x, code, ...)</span></span>
 <span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x10f30bc38&gt;</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x128e489f8&gt;</span></span>
 <span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span></code></pre></div>
 <p>Their arguments are <code>x</code> and <code>...</code>, and not
 more. Additional parameters fed to the <code>opt_&lt;class&gt;()</code>
@@ -569,7 +569,7 @@ factors)</li>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; {</span></span>
 <span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt;     .cstr_repair_attributes(x, code, ..., idiomatic_class = &quot;Date&quot;)</span></span>
 <span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x1195ea848&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x12b25eba8&gt;</span></span>
 <span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span>
 <span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a></span>
 <span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>constructive<span class="sc">:::</span>repair_attributes_factor</span>
@@ -578,7 +578,7 @@ factors)</li>
 <span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt;     .cstr_repair_attributes(x, code, ..., ignore = &quot;levels&quot;, </span></span>
 <span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#&gt;         idiomatic_class = &quot;factor&quot;)</span></span>
 <span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x118bace80&gt;</span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x12a67d7c0&gt;</span></span>
 <span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span>
 <span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a></span>
 <span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a>constructive<span class="sc">:::</span>repair_attributes_tbl_df</span>
@@ -587,7 +587,7 @@ factors)</li>
 <span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a><span class="co">#&gt;     .cstr_repair_attributes(x, code, ..., ignore = &quot;row.names&quot;, </span></span>
 <span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="co">#&gt;         idiomatic_class = c(&quot;tbl_df&quot;, &quot;tbl&quot;, &quot;data.frame&quot;))</span></span>
 <span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x118bed238&gt;</span></span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a><span class="co">#&gt; &lt;bytecode: 0x12a6c02b0&gt;</span></span>
 <span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a><span class="co">#&gt; &lt;environment: namespace:constructive&gt;</span></span></code></pre></div>
 </div>
 
