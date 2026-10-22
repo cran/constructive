@@ -13,7 +13,10 @@ opts_ggplot2_margin <- function(constructor = c("margin", "next", "double"), ...
 }
 
 `is_corrupted_ggplot2::margin` <- function(x) {
-  !is.double(x) && !is.null(attr(x, "S7_class"))
+  if (!is.double(x)) return(TRUE)
+  if (!is.integer(attr(x, "unit"))) return(TRUE)
+  if (!is.function(s7_class(x))) return(TRUE)
+  FALSE
 }
 
 #' @export
@@ -42,7 +45,7 @@ opts_ggplot2_margin <- function(constructor = c("margin", "next", "double"), ...
     x,
     code,
     idiomatic_class = c("ggplot2::margin", "simpleUnit", "unit", "unit_v2", "S7_object"),
-    ignore = c("S7_class", "unit"),
+    ignore = c(s7_internal_attrs(), "unit"),
     ...
   )
 }

@@ -30,16 +30,19 @@ opts_ordered <- function(constructor = c("ordered", "factor", "new_ordered", "ne
 }
 
 is_corrupted_ordered <- function(x) {
-  # FIXME
-  typeof(x) != "integer"
+  if (typeof(x) != "integer") return(TRUE)
+  levels <- attr(x, "levels")
+  if (is.null(levels) || !is.character(levels)) return(TRUE)
+  if (any(!is.na(x) & (x < 1 | x > length(levels)))) return(TRUE)
+  FALSE
 }
 
 #' @export
 #' @method .cstr_construct.ordered ordered
 .cstr_construct.ordered.ordered <- function(x, ...) {
   levs <- levels(x)
-  args <- list(setNames(as.character(x), names(x)))
-  default_levs <- sort(unique(as.character(x)))
+  args <- list(setNames(as.character.factor(x), names(x)))
+  default_levs <- sort(unique(as.character.factor(x)))
   if (!identical(default_levs, levs)) args$levels <- levs
   if (NA %in% levs) args["exclude"] <- list(NULL)
   if (length(args) == 1) {
@@ -54,8 +57,8 @@ is_corrupted_ordered <- function(x) {
 #' @method .cstr_construct.ordered factor
 .cstr_construct.ordered.factor <- function(x, ...) {
   levs <- levels(x)
-  args <- list(setNames(as.character(x), names(x)))
-  default_levs <- sort(unique(as.character(x)))
+  args <- list(setNames(as.character.factor(x), names(x)))
+  default_levs <- sort(unique(as.character.factor(x)))
   if (!identical(default_levs, levs)) args$levels <- levs
   if (NA %in% levs) args["exclude"] <- list(NULL)
   args$ordered <- TRUE

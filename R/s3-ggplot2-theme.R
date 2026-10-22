@@ -1,6 +1,6 @@
 #' @export
 #' @rdname other-opts
-opts_theme <- function(constructor = c("theme", "next", "list"), ...) {
+opts_theme <- function(constructor = c("default", "theme", "next", "list"), ...) {
   .cstr_options("theme", constructor = constructor[[1]], ...)
 }
 
@@ -13,7 +13,9 @@ opts_theme <- function(constructor = c("theme", "next", "list"), ...) {
 }
 
 is_corrupted_theme <- function(x) {
-  !is.list(x) || !is.null(attr(x, "S7_class"))
+  # because it's the main class in new ggplot we do this to keep the logic separate
+  # for new and old ggplot
+  !is.list(x) || !is.null(s7_class(x))
 }
 
 #' @export
@@ -23,11 +25,9 @@ is_corrupted_theme <- function(x) {
 }
 
 #' @export
-#' @method .cstr_construct.theme theme
-.cstr_construct.theme.theme <- function(x, ...) {
-  args <- unclass(x)
-  args$complete <- if (attr(x, "complete")) TRUE
-  args$validate <- if (!attr(x, "validate")) FALSE
+#' @method .cstr_construct.theme default
+.cstr_construct.theme.default <- function(x, ...) {
+  # use a complete theme such as `theme_bw()` if we can guess it
   if (attr(x, "complete")) {
     code <- guess_complete_theme(x, ...)
     if (!is.null(code)) {
@@ -35,6 +35,15 @@ is_corrupted_theme <- function(x) {
       return(code)
     }
   }
+  .cstr_construct.theme.theme(x, ...)
+}
+
+#' @export
+#' @method .cstr_construct.theme theme
+.cstr_construct.theme.theme <- function(x, ...) {
+  args <- unclass(x)
+  args$complete <- if (attr(x, "complete")) TRUE
+  args$validate <- if (!attr(x, "validate")) FALSE
   code <- .cstr_apply(args, "ggplot2::theme", ...)
   repair_attributes_theme(x, code, ...)
 }
@@ -184,17 +193,21 @@ guess_complete_theme <- function(x, ...) {
           args$base_rect_size <- x$rect$linewidth
         }
       } else {
-        if (th_val$text@size != x$text@size) {
-          args$base_size <- x$text@size
+        # Theme elements are S7 objects here. `@` only reads S7 properties from
+        # R 4.3 on, so go through `S7::prop()` to stay portable on older R.
+        # ggplot2 imports S7, so it is available whenever we land here.
+        text_size <- S7::prop(x$text, "size")
+        if (S7::prop(th_val$text, "size") != text_size) {
+          args$base_size <- text_size
         }
-        if (th_val$text@family != x$text@family) {
-          args$base_family <- x$text@family
+        if (S7::prop(th_val$text, "family") != S7::prop(x$text, "family")) {
+          args$base_family <- S7::prop(x$text, "family")
         }
-        if (x$line@linewidth != x$text@size / 22) {
-          args$base_line_size <- x$line@linewidth
+        if (S7::prop(x$line, "linewidth") != text_size / 22) {
+          args$base_line_size <- S7::prop(x$line, "linewidth")
         }
-        if (x$rect@linewidth != x$text@size / 22) {
-          args$base_rect_size <- x$rect@linewidth
+        if (S7::prop(x$rect, "linewidth") != text_size / 22) {
+          args$base_rect_size <- S7::prop(x$rect, "linewidth")
         }
       }
 

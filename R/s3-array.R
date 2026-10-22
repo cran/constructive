@@ -26,7 +26,10 @@ opts_array <- function(constructor = c("array", "next"), ...) {
 }
 
 is_corrupted_array <- function(x) {
-  !("dim" %in% names(attributes(x)) && (is.atomic(x) || is.list(x) || is.expression(x)))
+  dim <- attr(x, "dim")
+  if (is.null(dim) || !is.integer(dim)) return(TRUE)
+  if (!(is.atomic(x) || is.list(x) || is.expression(x))) return(TRUE)
+  FALSE
 }
 
 #' @export
@@ -39,8 +42,7 @@ is_corrupted_array <- function(x) {
     x_stripped,
     dim = attr(x, "dim")
   )
-  dimnames <- attr(x, "dimnames")
-  args$dim_names <- if (!is.null(dimnames)) list(dimnames = dimnames)
+  args$dimnames <- attr(x, "dimnames")
 
   # build code
   code <- .cstr_apply(args, fun = "array", ...)
@@ -53,6 +55,6 @@ repair_attributes_array <- function(x, code, ..., pipe = NULL) {
   .cstr_repair_attributes(
     x, code, ...,
     pipe = pipe,
-    ignore = "dim"
+    ignore = c("dim", "dimnames")
   )
 }

@@ -6,9 +6,10 @@
 \usage{
 opts_environment(
   constructor = c(".env", "list2env", "as.environment", "new.env", "topenv",
-    "new_environment", "predefine"),
+    "new_environment", "predefine", "unserialize"),
   ...,
-  recurse = FALSE
+  recurse = FALSE,
+  context = c("parents", "attributes", "locked")
 )
 }
 \arguments{
@@ -21,6 +22,24 @@ environment, see \strong{Constructors} section.}
 \code{"new_environment"}. Whether to attempt to recreate all parent environments
 until a known environment is found, if \code{FALSE} (the default) we will use
 \code{topenv()} to find a known ancestor to set as the parent.}
+
+\item{context}{Character vector. Only considered if \code{constructor} is \code{".env"}.
+Information to display as arguments of \code{.env()}, they are ignored by the
+function and don't change the constructed object. A subset of:
+\itemize{
+\item \code{"parents"}: the names or memory addresses of the parent environments,
+until a special environment is found
+\item \code{"attributes"}: the attributes of the environment
+\item \code{"locked"}: \code{locked = TRUE} if the environment is locked
+\item \code{"names"}: the names of the bindings
+\item \code{"objects"}: the construction of the bindings, active and lazy bindings
+are omitted so they're not evaluated
+\item \code{"parent"}: the construction of the parent environment, repeated until a
+special environment is found
+}
+
+Environments found in \code{"objects"} and \code{"parent"} don't display objects, and
+environments found in \code{"objects"} don't display their parent.}
 }
 \value{
 An object of class <constructive_options/constructive_options_environment>
@@ -70,7 +89,8 @@ of environments of function.
 We might set the \code{constructor} argument to:
 \itemize{
 \item \code{".env"} (default): use \code{constructive::.env()} to construct the environment from
-its memory address.
+its memory address. Additional information is displayed through its
+non-functional arguments, see the \code{context} argument.
 }
 \itemize{
 \item \code{"list2env"}: We construct the environment as a list then
@@ -101,6 +121,12 @@ we define the environments and their content  above the object returning
 call, using placeholder names \code{..env.1..}, \code{..env.2..} etc.
 The caveat is that the created code won't be a single call
 and will create objects in the workspace. \code{recurse} is ignored.
+\item \code{"unserialize"} : We serialize the environment and construct it with
+\code{unserialize()} on the raw vector. The code is not readable but it
+reproduces the environment exactly in a new session: its parents up to a
+special environment, its bindings including active bindings and promises,
+its attributes and whether it is locked. Special environments met on the
+way, like namespaces, are serialized by name. \code{recurse} is ignored.
 }
 }
 

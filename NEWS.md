@@ -1,3 +1,74 @@
+# constructive 1.4.0
+
+This version handles the changes in dependencies that broke the previous version,
+supports idiomatic construction for many new classes and integrates a couple of new features.
+
+New features:
+
+* `construct_serialize()` shows how to rebuild an object from its serialized
+  form, which is useful for objects that have no idiomatic constructor.
+* `opts_character(multiline = TRUE)` prints strings containing new lines on
+  several lines rather than escaping them.
+* `opts_matrix(byrow = TRUE)` lays matrices out by row, in the spirit of
+  `tibble::tribble()`.
+* `opts_environment(context =)` controls which aspects of an environment we
+  describe: parents, attributes, locks, names, objects.
+* `opts_environment("unserialize")` reconstructs an environment from its
+  serialized form, preserving active bindings, locks and self references.
+* A `"default"` constructor for `ggplot2` themes guesses the `theme_*()`
+  function an object comes from, and falls back on a plain `theme()` call.
+* Durations are constructed with whole years and months where that is exact.
+
+New supported classes:
+
+* base R and recommended packages: `"table"`, `"ftable"`, `"dist"`, `"ecdf"`,
+  `"stepfun"`, `"roman"` and `"raster"`
+* `clock`: the 6 calendars, `"clock_naive_time"`, `"clock_sys_time"`,
+  `"clock_zoned_time"`, `"clock_duration"` and `"clock_weekday"`
+* `data.table`: `"IDate"` and `"ITime"`
+* `fs`: `"fs_path"`, `"fs_bytes"` and `"fs_perms"`
+* `glue`: `"glue"`
+* `haven`: `"haven_labelled"` and `"haven_labelled_spss"`
+* `hms`: `"hms"`
+* `htmltools`: `"shiny.tag"`, `"shiny.tag.list"`, `"shiny.tag.function"`,
+  `"html"` and `"html_dependency"`
+* `lubridate`: `"Period"`, `"Duration"` and `"Interval"`
+* `Matrix`: `"sparseMatrix"`, `"denseMatrix"`, `"diagonalMatrix"`,
+  `"indMatrix"` and `"sparseVector"`
+* `readr`: `"col_spec"`, `"collector"`, `"locale"` and `"date_names"`
+* `S7`: `"S7_class_ref"`, used by S7 > 0.2.2 to store the class of an object
+* `sf`: `"sf"`, `"sfc"`, `"sfg"`, `"crs"` and `"bbox"`
+* `survival`: `"Surv"`
+* `tsibble`: `"tbl_ts"`, `"grouped_ts"`, `"yearmonth"`, `"yearquarter"` and
+  `"yearweek"`
+* `units`: `"units"` and `"mixed_units"`
+* `vctrs`: `"vctrs_vctr"`, `"vctrs_rcrd"` and `"vctrs_unspecified"`
+
+Fixes and improvements:
+
+* We support S7 > 0.2.2, which stores the class of an object differently.
+  S7 objects built with an S7 version that stores it differently than the
+  installed one are considered corrupted.
+* We don't emit the deprecated `.additional_properties` argument of
+  `ellmer::type_object()` anymore. `ellmer` 0.5.0 made it `deprecated()`.
+* Coercion generics and `NA` predicates (`as.character()`, `is.na()`, `[[` and
+  friends) are shimmed internally so a class with its own methods cannot alter
+  the code we generate.
+* `xts` objects are constructed exactly, with `xts::xts()` rather than
+  `as.xts()` on a matrix, which used to lose the index class and time zone.
+* Missing `integer64` values are constructed with `NA` rather than the string
+  `"NA"`, which newer `bit64` warns about.
+* `lengths()` is shimmed to honour `use.names = FALSE` and to return
+  `integer(0)` on empty input.
+* The redundant `name` attribute of `R6` generators is not repaired anymore.
+* `array()` gets its `dimnames` argument right.
+* `.cstr_construct.CoordCartesian.default()` is registered, it was missing due
+  to a wrong roxygen tag.
+
+Other:
+
+* `constructive` now declares a dependency on R >= 4.0.0.
+
 # constructive 1.3.0
 
 1.2.0 couldn't be installed on some OS, R versions, or combinations of the latter, this is addressed in 1.3.0 along with a few additional fixes and features so it ends up being a new minor version.

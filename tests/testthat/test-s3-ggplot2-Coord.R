@@ -1,4 +1,5 @@
 test_that("CoordCartesian", {
+  skip_if(with_versions(R < "4.4"))
   expect_faithful_ggplot_construction(ggplot2::ggplot() + ggplot2::scale_x_continuous(limits = c(325, 500)))
   expect_faithful_ggplot_construction(ggplot2::ggplot() + ggplot2::coord_cartesian(xlim = c(325, 500)))
   expect_faithful_ggplot_construction(ggplot2::ggplot() + ggplot2::coord_cartesian(xlim = c(325, 500)))
@@ -55,6 +56,7 @@ test_that("CoordPolar", {
 })
 
 test_that("CoordSf", {
+  skip_on_valgrind()
   skip_if(is.na(suppressWarnings(sf::st_crs(4326)$input)))
   expect_snapshot({
     construct(ggplot2::coord_sf(default_crs = sf::st_crs(4326)), data = list(crs = sf::st_crs(4326)))

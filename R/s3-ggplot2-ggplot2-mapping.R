@@ -56,7 +56,8 @@ opts_ggplot2_mapping <- function(constructor = c("aes", "next", "list"), ...) {
 }
 
 `is_corrupted_ggplot2::mapping` <- function(x) {
-  # TODO
+  if (!is.list(x)) return(TRUE)
+  if (!is.function(s7_class(x))) return(TRUE)
   FALSE
 }
 
@@ -64,7 +65,7 @@ opts_ggplot2_mapping <- function(constructor = c("aes", "next", "list"), ...) {
   .cstr_repair_attributes(
     x, code, pipe = pipe,
     idiomatic_class = c("ggplot2::mapping", "uneval", "gg", "S7_object"),
-    ignore = "S7_class",
+    ignore = s7_internal_attrs(),
     ...
   )
 }

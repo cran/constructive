@@ -27,7 +27,15 @@ opts_POSIXlt <- function(constructor = c("as.POSIXlt", "next", "list"), ...) {
 }
 
 is_corrupted_POSIXlt <- function(x) {
-  # TODO
+  if (!is.list(x)) return(TRUE)
+  if (with_versions(R < "4.3.0")) {
+    expected_names <- c("sec", "min", "hour", "mday", "mon", "year", "wday", "yday", "isdst")
+  } else {
+    expected_names <- c("sec", "min", "hour", "mday", "mon", "year", "wday", "yday", "isdst", "zone", "gmtoff")
+  }
+  if (!identical(names(x), expected_names)) return(TRUE)
+  tzone <- attr(x, "tzone")
+  if (is.null(tzone) || !is.character(tzone)) return(TRUE)
   FALSE
 }
 
@@ -55,8 +63,8 @@ is_corrupted_POSIXlt <- function(x) {
   }
 
   x_chr <- format(x)
-  split_s <- as.numeric(x) %% 1
-  dec_lgl <- split_s != 0 & !is.na(x)
+  split_s <- as.double.POSIXlt(x) %% 1
+  dec_lgl <- split_s != 0 & !is.na.POSIXlt(x)
   dec_seconds <- vapply(strip(x)$sec[dec_lgl], .cstr_construct, character(1))
   dec_seconds <- sub("^.*(\\..*)", "\\1", dec_seconds)
   x_chr[dec_lgl] <- paste0(x_chr[dec_lgl], dec_seconds)

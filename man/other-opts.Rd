@@ -7,21 +7,22 @@
 %   R/s3-ggplot2-CoordMunch.R, R/s3-ggplot2-CoordPolar.R,
 %   R/s3-ggplot2-CoordQuickmap.R, R/s3-ggplot2-CoordSf.R,
 %   R/s3-ggplot2-CoordTrans.R, R/s3-ggplot2-FacetGrid.R,
-%   R/s3-ggplot2-FacetWrap.R, R/s3-ggplot2-Guide.R,
-%   R/s3-ggplot2-Scale.R, R/s3-ggplot2-ScalesList.R,
-%   R/s3-ggplot2-element_blank.R, R/s3-ggplot2-element_grob.R,
-%   R/s3-ggplot2-element_line.R, R/s3-ggplot2-element_rect.R,
-%   R/s3-ggplot2-element_render.R, R/s3-ggplot2-element_text.R,
-%   R/s3-ggplot2-ggplot2-element_blank.R, R/s3-ggplot2-ggplot2-element_geom.R,
-%   R/s3-ggplot2-ggplot2-element_line.R, R/s3-ggplot2-ggplot2-element_point.R,
-%   R/s3-ggplot2-ggplot2-element_polygon.R, R/s3-ggplot2-ggplot2-element_rect.R,
-%   R/s3-ggplot2-ggplot2-element_text.R, R/s3-ggplot2-ggplot2-mapping.R,
-%   R/s3-ggplot2-ggplot2-margin.R, R/s3-ggplot2-ggplot2-theme.R,
-%   R/s3-ggplot2-ggproto.R, R/s3-ggplot2-labels.R, R/s3-ggplot2-margin.R,
-%   R/s3-ggplot2-rel.R, R/s3-ggplot2-theme.R, R/s3-ggplot2-uneval.R,
-%   R/s3-ggplot2-waiver.R, R/s3-noquote.R, R/s3-person.R,
-%   R/s3-simpleCondition.R, R/s3-simpleError.R, R/s3-simpleMessage.R,
-%   R/s3-simpleUnit.R, R/s3-simpleWarning.R, R/s3-warning.R
+%   R/s3-ggplot2-FacetWrap.R, R/s3-ggplot2-Guide.R, R/s3-ggplot2-Scale.R,
+%   R/s3-ggplot2-ScalesList.R, R/s3-ggplot2-element_blank.R,
+%   R/s3-ggplot2-element_grob.R, R/s3-ggplot2-element_line.R,
+%   R/s3-ggplot2-element_rect.R, R/s3-ggplot2-element_render.R,
+%   R/s3-ggplot2-element_text.R, R/s3-ggplot2-ggplot2-element_blank.R,
+%   R/s3-ggplot2-ggplot2-element_geom.R, R/s3-ggplot2-ggplot2-element_line.R,
+%   R/s3-ggplot2-ggplot2-element_point.R,
+%   R/s3-ggplot2-ggplot2-element_polygon.R,
+%   R/s3-ggplot2-ggplot2-element_rect.R, R/s3-ggplot2-ggplot2-element_text.R,
+%   R/s3-ggplot2-ggplot2-mapping.R, R/s3-ggplot2-ggplot2-margin.R,
+%   R/s3-ggplot2-ggplot2-theme.R, R/s3-ggplot2-ggproto.R,
+%   R/s3-ggplot2-labels.R, R/s3-ggplot2-margin.R, R/s3-ggplot2-rel.R,
+%   R/s3-ggplot2-theme.R, R/s3-ggplot2-uneval.R, R/s3-ggplot2-waiver.R,
+%   R/s3-noquote.R, R/s3-person.R, R/s3-simpleCondition.R, R/s3-simpleError.R,
+%   R/s3-simpleMessage.R, R/s3-simpleUnit.R, R/s3-simpleWarning.R,
+%   R/s3-warning.R
 \name{other-opts}
 \alias{other-opts}
 \alias{opts_NULL}
@@ -162,7 +163,7 @@ opts_ggplot2_mapping(constructor = c("aes", "next", "list"), ...)
 
 opts_ggplot2_margin(constructor = c("margin", "next", "double"), ...)
 
-opts_ggplot2_theme(constructor = c("theme", "next", "list"), ...)
+opts_ggplot2_theme(constructor = c("default", "theme", "next", "list"), ...)
 
 opts_ggproto(constructor = c("default", "ggproto", "next", "environment"), ...)
 
@@ -172,7 +173,7 @@ opts_margin(constructor = c("margin", "next", "double"), ...)
 
 opts_rel(constructor = c("rel", "next", "double"), ...)
 
-opts_theme(constructor = c("theme", "next", "list"), ...)
+opts_theme(constructor = c("default", "theme", "next", "list"), ...)
 
 opts_uneval(constructor = c("aes", "next", "list"), ...)
 

@@ -201,7 +201,7 @@ process_classes <- function(classes) {
   if (!length(classes)) return(NULL)
   classes <- setdiff(classes, "*none*")
   if ("*base*" %in% classes) {
-    base_packages <- c("base", "utils", "stats", "methods", "grid")
+    base_packages <- c("base", "utils", "stats", "methods", "grDevices", "grid")
     classes <- setdiff(c(classes, unlist(all_classes[base_packages])), "*base*")
   }
   exclude <- classes[startsWith(classes, "-")]
@@ -265,16 +265,22 @@ all_classes <- list(
     "simpleError",
     "simpleMessage",
     "simpleWarning",
+    "table",
     "warning"
   ),
   utils = c(
     "bibentry",
     "citationFooter",
     "citationHeader",
-    "person"
+    "person",
+    "roman"
   ),
   stats = c(
+    "dist",
+    "ecdf",
+    "ftable",
     "mts",
+    "stepfun",
     "ts"
   ),
   methods = c(
@@ -286,6 +292,19 @@ all_classes <- list(
   blob = c(
     "blob"
   ),
+  clock = c(
+    "clock_duration",
+    "clock_iso_year_week_day",
+    "clock_naive_time",
+    "clock_sys_time",
+    "clock_weekday",
+    "clock_year_day",
+    "clock_year_month_day",
+    "clock_year_month_weekday",
+    "clock_year_quarter_day",
+    "clock_year_week_day",
+    "clock_zoned_time"
+  ),
   constructive = c(
     "constructive_options"
   ),
@@ -295,6 +314,11 @@ all_classes <- list(
     "ellmer::TypeEnum", 
     "ellmer::TypeJsonSchema",
     "ellmer::TypeObject"
+  ),
+  fs = c(
+    "fs_bytes",
+    "fs_path",
+    "fs_perms"
   ),
   ggplot2 = c(
     "CoordCartesian",
@@ -353,18 +377,58 @@ all_classes <- list(
     "uneval",
     "waiver"
   ),
-  data.table = c("data.table"),
+  data.table = c(
+    "data.table",
+    "IDate",
+    "ITime"
+  ),
   dm = c("dm"),
   dplyr = c(
     "grouped_df",
     "rowwise_df"
   ),
+  glue = c("glue"),
+  grDevices = c(
+    "raster"
+  ),
   grid = c(
     "simpleUnit"
+  ),
+  haven = c(
+    "haven_labelled",
+    "haven_labelled_spss"
+  ),
+  hms = c(
+    "hms"
+  ),
+  htmltools = c(
+    "html",
+    "html_dependency",
+    "shiny.tag",
+    "shiny.tag.function",
+    "shiny.tag.list"
+  ),
+  lubridate = c(
+    "Duration",
+    "Interval",
+    "Period"
+  ),
+  Matrix = c(
+    "denseMatrix",
+    "diagonalMatrix",
+    "indMatrix",
+    "sparseMatrix",
+    "sparseVector"
   ),
   R6 = c(
     "R6",
     "R6ClassGenerator"
+  ),
+  readr = c(
+    "col_spec",
+    "collector",
+    "date_names",
+    "locale"
   ),
   rlang = c(
     "quosure",
@@ -374,6 +438,7 @@ all_classes <- list(
     "S7_any", 
     "S7_base_class", 
     "S7_class",
+    "S7_class_ref",
     "S7_external_generic",
     "S7_generic", 
     "S7_object", 
@@ -381,11 +446,35 @@ all_classes <- list(
     "S7_S3_class", 
     "S7_union"
   ),
+  sf = c(
+    "bbox",
+    "crs",
+    "sf",
+    "sfc",
+    "sfg"
+  ),
+  survival = c(
+    "Surv"
+  ),
   tibble = c(
     "tbl_df"
   ),
+  tsibble = c(
+    "grouped_ts",
+    "tbl_ts",
+    "yearmonth",
+    "yearquarter",
+    "yearweek"
+  ),
+  units = c(
+    "mixed_units",
+    "units"
+  ),
   vctrs = c(
-    "vctrs_list_of"
+    "vctrs_list_of",
+    "vctrs_rcrd",
+    "vctrs_unspecified",
+    "vctrs_vctr"
   ),
   xts = c(
     "xts"

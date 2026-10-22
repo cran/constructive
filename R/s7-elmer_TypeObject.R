@@ -22,7 +22,7 @@ opts_ellmer_TypeObject <- function(constructor = c("type_object", "TypeObject", 
 }
 
 `is_corrupted_ellmer::TypeObject` <- function(x) {
-  FALSE
+  has_foreign_s7_attrs(x)
 }
 
 #' @export
@@ -30,18 +30,23 @@ opts_ellmer_TypeObject <- function(constructor = c("type_object", "TypeObject", 
   args <- c(
     list(.description = attr(x, "description")),
     attr(x, "properties"),
-    list(
-      .required = attr(x, "required"),
-      .additional_properties = attr(x, "additional_properties")
-    )
+    list(.required = attr(x, "required"))
   )
+  # `.additional_properties` defaults to `FALSE` for `type_object()` in all
+  # ellmer versions and was deprecated in ellmer 0.5.0, so only emit it when it
+  # is `TRUE`. This avoids a deprecation warning and keeps the reconstructed
+  # code idiomatic. (We can't rely on `keep_only_non_defaults()` to drop it
+  # because ellmer's formal default is now `deprecated()`, not `FALSE`.)
+  if (isTRUE(attr(x, "additional_properties"))) {
+    args$.additional_properties <- attr(x, "additional_properties")
+  }
   args <- keep_only_non_defaults(args, ellmer::type_object)
   names(args)[names(args) == ".description"] <- ""
   code <- constructive::.cstr_apply(args, fun = "ellmer::type_object", ...)
   constructive::.cstr_repair_attributes(
     x, code, ...,
     idiomatic_class = c("ellmer::TypeObject", "ellmer::Type", "S7_object"),
-    ignore = c("S7_class", "description", "required", "additional_properties", "properties")
+    ignore = c(s7_internal_attrs(), "description", "required", "additional_properties", "properties")
   )
 }
 
@@ -59,6 +64,6 @@ opts_ellmer_TypeObject <- function(constructor = c("type_object", "TypeObject", 
   constructive::.cstr_repair_attributes(
     x, code, ...,
     idiomatic_class = c("ellmer::TypeObject", "ellmer::Type", "S7_object"),
-    ignore = c("S7_class", "description", "required", "additional_properties", "properties")
+    ignore = c(s7_internal_attrs(), "description", "required", "additional_properties", "properties")
   )
 }

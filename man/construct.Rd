@@ -131,14 +131,28 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_array]{opts_array}(constructor = c("array", "next"), ...)}
   \item \code{\link[=opts_AsIs]{opts_AsIs}(constructor = c("I", "next"), ...)}
   \item \code{\link[=opts_atomic]{opts_atomic}(..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
+  \item \code{\link[=opts_bbox]{opts_bbox}(constructor = c("st_bbox", "next"), ...)}
   \item \code{\link[=opts_bibentry]{opts_bibentry}(constructor = c("bibentry", "next"), ...)}
   \item \code{\link[=opts_blob]{opts_blob}(constructor = c("blob", "next"), ...)}
-  \item \code{\link[=opts_character]{opts_character}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE, unicode_representation = c("ascii", "latin", "character", "unicode"), escape = FALSE)}
+  \item \code{\link[=opts_character]{opts_character}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE, unicode_representation = c("ascii", "latin", "character", "unicode"), escape = FALSE, multiline = FALSE)}
   \item \code{\link[=opts_citationFooter]{opts_citationFooter}(constructor = c("citFooter", "next"), ...)}
   \item \code{\link[=opts_citationHeader]{opts_citationHeader}(constructor = c("citHeader", "next"), ...)}
   \item \code{\link[=opts_classGeneratorFunction]{opts_classGeneratorFunction}(constructor = c("setClass"), ...)}
   \item \code{\link[=opts_classPrototypeDef]{opts_classPrototypeDef}(constructor = c("prototype"), ...)}
   \item \code{\link[=opts_classRepresentation]{opts_classRepresentation}(constructor = c("getClassDef"), ...)}
+  \item \code{\link[=opts_clock_duration]{opts_clock_duration}(constructor = c("duration", "next", "list"), ...)}
+  \item \code{\link[=opts_clock_iso_year_week_day]{opts_clock_iso_year_week_day}(constructor = c("iso_year_week_day", "next", "list"), ...)}
+  \item \code{\link[=opts_clock_naive_time]{opts_clock_naive_time}(constructor = c("as_naive_time", "next", "list"), ...)}
+  \item \code{\link[=opts_clock_sys_time]{opts_clock_sys_time}(constructor = c("as_sys_time", "next", "list"), ...)}
+  \item \code{\link[=opts_clock_weekday]{opts_clock_weekday}(constructor = c("weekday", "next", "integer"), ...)}
+  \item \code{\link[=opts_clock_year_day]{opts_clock_year_day}(constructor = c("year_day", "next", "list"), ...)}
+  \item \code{\link[=opts_clock_year_month_day]{opts_clock_year_month_day}(constructor = c("year_month_day", "next", "list"), ...)}
+  \item \code{\link[=opts_clock_year_month_weekday]{opts_clock_year_month_weekday}(constructor = c("year_month_weekday", "next", "list"), ...)}
+  \item \code{\link[=opts_clock_year_quarter_day]{opts_clock_year_quarter_day}(constructor = c("year_quarter_day", "next", "list"), ...)}
+  \item \code{\link[=opts_clock_year_week_day]{opts_clock_year_week_day}(constructor = c("year_week_day", "next", "list"), ...)}
+  \item \code{\link[=opts_clock_zoned_time]{opts_clock_zoned_time}(constructor = c("as_zoned_time", "next", "list"), ...)}
+  \item \code{\link[=opts_col_spec]{opts_col_spec}(constructor = c("cols", "next", "list"), ...)}
+  \item \code{\link[=opts_collector]{opts_collector}(constructor = c("col", "next", "list"), ...)}
   \item \code{\link[=opts_complex]{opts_complex}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
   \item \code{\link[=opts_constructive_options]{opts_constructive_options}(constructor = c("opts", "next"), ...)}
   \item \code{\link[=opts_CoordCartesian]{opts_CoordCartesian}(constructor = c("default", "coord_cartesian", "next", "environment"), ...)}
@@ -152,13 +166,20 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_CoordSf]{opts_CoordSf}(constructor = c("coord_sf", "next", "environment"), ...)}
   \item \code{\link[=opts_CoordTrans]{opts_CoordTrans}(constructor = c("coord_trans", "next", "environment"), ...)}
   \item \code{\link[=opts_CoordTransform]{opts_CoordTransform}(constructor = c("coord_transform", "next"), ...)}
+  \item \code{\link[=opts_crs]{opts_crs}(constructor = c("st_crs", "next"), ...)}
   \item \code{\link[=opts_data.frame]{opts_data.frame}(constructor = c("data.frame", "read.table", "next", "list"), ..., recycle = TRUE)}
   \item \code{\link[=opts_data.table]{opts_data.table}(constructor = c("data.table", "next", "list"), ..., selfref = FALSE, recycle = TRUE)}
   \item \code{\link[=opts_Date]{opts_Date}(constructor = c("as.Date", "as_date", "date", "new_date", "as.Date.numeric", "as_date.numeric", "next", "double"), ..., origin = "1970-01-01")}
+  \item \code{\link[=opts_date_names]{opts_date_names}(constructor = c("date_names_lang", "date_names", "next", "list"), ...)}
+  \item \code{\link[=opts_denseMatrix]{opts_denseMatrix}(constructor = c("Matrix", "next"), ...)}
+  \item \code{\link[=opts_diagonalMatrix]{opts_diagonalMatrix}(constructor = c("Diagonal", "next"), ...)}
   \item \code{\link[=opts_difftime]{opts_difftime}(constructor = c("as.difftime", "next"), ...)}
+  \item \code{\link[=opts_dist]{opts_dist}(constructor = c("as.dist", "next"), ...)}
   \item \code{\link[=opts_dm]{opts_dm}(constructor = c("dm", "next", "list"), ...)}
   \item \code{\link[=opts_dots]{opts_dots}(constructor = c("default"), ...)}
   \item \code{\link[=opts_double]{opts_double}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
+  \item \code{\link[=opts_Duration]{opts_Duration}(constructor = c("default", "dseconds", "duration", "next"), ...)}
+  \item \code{\link[=opts_ecdf]{opts_ecdf}(constructor = c("ecdf", "next"), ...)}
   \item \code{\link[=opts_element_blank]{opts_element_blank}(constructor = c("element_blank", "next", "list"), ...)}
   \item \code{\link[=opts_element_grob]{opts_element_grob}(constructor = c("element_grob", "next", "list"), ...)}
   \item \code{\link[=opts_element_line]{opts_element_line}(constructor = c("element_line", "next", "list"), ...)}
@@ -170,7 +191,7 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_ellmer_TypeEnum]{opts_ellmer_TypeEnum}(constructor = c("type_enum", "TypeEnum", "next"), ...)}
   \item \code{\link[=opts_ellmer_TypeJsonSchema]{opts_ellmer_TypeJsonSchema}(constructor = c("type_from_schema", "TypeJsonSchema", "next"), ...)}
   \item \code{\link[=opts_ellmer_TypeObject]{opts_ellmer_TypeObject}(constructor = c("type_object", "TypeObject", "next"), ...)}
-  \item \code{\link[=opts_environment]{opts_environment}(constructor = c(".env", "list2env", "as.environment", "new.env", "topenv", "new_environment", "predefine"), ..., recurse = FALSE)}
+  \item \code{\link[=opts_environment]{opts_environment}(constructor = c(".env", "list2env", "as.environment", "new.env", "topenv", "new_environment", "predefine", "unserialize"), ..., recurse = FALSE, context = c("parents", "attributes", "locked"))}
   \item \code{\link[=opts_error]{opts_error}(constructor = c("errorCondition", "next"), ...)}
   \item \code{\link[=opts_expression]{opts_expression}(constructor = c("default"), ...)}
   \item \code{\link[=opts_externalptr]{opts_externalptr}(constructor = c("default"), ...)}
@@ -179,6 +200,10 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_FacetWrap]{opts_FacetWrap}(constructor = c("facet_wrap", "ggproto", "next", "environment"), ...)}
   \item \code{\link[=opts_factor]{opts_factor}(constructor = c("factor", "as_factor", "new_factor", "next", "integer"), ...)}
   \item \code{\link[=opts_formula]{opts_formula}(constructor = c("default", "formula", "as.formula", "new_formula", "next"), ..., environment = TRUE)}
+  \item \code{\link[=opts_fs_bytes]{opts_fs_bytes}(constructor = c("as_fs_bytes", "next"), ...)}
+  \item \code{\link[=opts_fs_path]{opts_fs_path}(constructor = c("path", "as_fs_path", "next"), ...)}
+  \item \code{\link[=opts_fs_perms]{opts_fs_perms}(constructor = c("as_fs_perms", "next"), ...)}
+  \item \code{\link[=opts_ftable]{opts_ftable}(constructor = c("ftable", "next"), ...)}
   \item \code{\link[=opts_function]{opts_function}(constructor = c("function", "as.function", "new_function"), ..., environment = TRUE, srcref = FALSE, trim = NULL)}
   \item \code{\link[=opts_ggplot]{opts_ggplot}(constructor = c("ggplot", "next", "list"), ...)}
   \item \code{\link[=opts_ggplot2_element_blank]{opts_ggplot2_element_blank}(constructor = c("element_blank", "next"), ...)}
@@ -192,9 +217,11 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_ggplot2_labels]{opts_ggplot2_labels}(constructor = c("labs", "next"), ...)}
   \item \code{\link[=opts_ggplot2_mapping]{opts_ggplot2_mapping}(constructor = c("aes", "next", "list"), ...)}
   \item \code{\link[=opts_ggplot2_margin]{opts_ggplot2_margin}(constructor = c("margin", "next", "double"), ...)}
-  \item \code{\link[=opts_ggplot2_theme]{opts_ggplot2_theme}(constructor = c("theme", "next", "list"), ...)}
+  \item \code{\link[=opts_ggplot2_theme]{opts_ggplot2_theme}(constructor = c("default", "theme", "next", "list"), ...)}
   \item \code{\link[=opts_ggproto]{opts_ggproto}(constructor = c("default", "ggproto", "next", "environment"), ...)}
+  \item \code{\link[=opts_glue]{opts_glue}(constructor = c("as_glue", "next"), ...)}
   \item \code{\link[=opts_grouped_df]{opts_grouped_df}(constructor = c("default", "next", "list"), ...)}
+  \item \code{\link[=opts_grouped_ts]{opts_grouped_ts}(constructor = c("group_by", "next"), ...)}
   \item \code{\link[=opts_Guide]{opts_Guide}(constructor = c("default", "next", "environment"), ...)}
   \item \code{\link[=opts_GuideAxis]{opts_GuideAxis}(constructor = c("guide_axis", "next"), ...)}
   \item \code{\link[=opts_GuideAxisLogticks]{opts_GuideAxisLogticks}(constructor = c("guide_axis_logticks", "next"), ...)}
@@ -207,16 +234,27 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_GuideLegend]{opts_GuideLegend}(constructor = c("guide_legend", "next"), ...)}
   \item \code{\link[=opts_GuideNone]{opts_GuideNone}(constructor = c("guide_none", "next"), ...)}
   \item \code{\link[=opts_Guides]{opts_Guides}(constructor = c("guides", "next"), ...)}
+  \item \code{\link[=opts_haven_labelled]{opts_haven_labelled}(constructor = c("labelled", "next"), ...)}
+  \item \code{\link[=opts_haven_labelled_spss]{opts_haven_labelled_spss}(constructor = c("labelled_spss", "next"), ...)}
   \item \code{\link[=opts_hexmode]{opts_hexmode}(constructor = c("as.hexmode", "next"), ..., integer = FALSE)}
+  \item \code{\link[=opts_hms]{opts_hms}(constructor = c("as_hms", "hms", "new_hms", "next", "double"), ...)}
+  \item \code{\link[=opts_html]{opts_html}(constructor = c("HTML", "next"), ...)}
+  \item \code{\link[=opts_html_dependency]{opts_html_dependency}(constructor = c("htmlDependency", "next"), ...)}
+  \item \code{\link[=opts_IDate]{opts_IDate}(constructor = c("as.IDate", "next", "integer"), ...)}
+  \item \code{\link[=opts_indMatrix]{opts_indMatrix}(constructor = c("as", "next"), ...)}
   \item \code{\link[=opts_integer]{opts_integer}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
   \item \code{\link[=opts_integer64]{opts_integer64}(constructor = c("as.integer64", "next", "double"), ...)}
+  \item \code{\link[=opts_Interval]{opts_Interval}(constructor = c("interval", "next"), ...)}
+  \item \code{\link[=opts_ITime]{opts_ITime}(constructor = c("as.ITime", "next", "integer"), ...)}
   \item \code{\link[=opts_labels]{opts_labels}(constructor = c("labs", "next", "list"), ...)}
   \item \code{\link[=opts_language]{opts_language}(constructor = c("default"), ...)}
   \item \code{\link[=opts_Layer]{opts_Layer}(constructor = c("default", "layer", "next", "environment"), ...)}
   \item \code{\link[=opts_list]{opts_list}(constructor = c("list", "list2"), ..., trim = NULL, fill = c("vector", "new_list", "+", "...", "none"))}
+  \item \code{\link[=opts_locale]{opts_locale}(constructor = c("locale", "next", "list"), ...)}
   \item \code{\link[=opts_logical]{opts_logical}(constructor = c("default"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE)}
   \item \code{\link[=opts_margin]{opts_margin}(constructor = c("margin", "next", "double"), ...)}
-  \item \code{\link[=opts_matrix]{opts_matrix}(constructor = c("matrix", "array", "cbind", "rbind", "next"), ...)}
+  \item \code{\link[=opts_matrix]{opts_matrix}(constructor = c("matrix", "array", "cbind", "rbind", "next"), ..., byrow = FALSE)}
+  \item \code{\link[=opts_mixed_units]{opts_mixed_units}(constructor = c("mixed_units", "next"), ...)}
   \item \code{\link[=opts_mts]{opts_mts}(constructor = c("ts", "next", "atomic"), ...)}
   \item \code{\link[=opts_noquote]{opts_noquote}(constructor = c("noquote", "next"), ...)}
   \item \code{\link[=opts_NULL]{opts_NULL}(constructor = "NULL", ...)}
@@ -226,6 +264,7 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_ordered]{opts_ordered}(constructor = c("ordered", "factor", "new_ordered", "next", "integer"), ...)}
   \item \code{\link[=opts_package_version]{opts_package_version}(constructor = c("package_version", "next", "list"), ...)}
   \item \code{\link[=opts_pairlist]{opts_pairlist}(constructor = c("pairlist", "pairlist2"), ...)}
+  \item \code{\link[=opts_Period]{opts_Period}(constructor = c("period", "next"), ...)}
   \item \code{\link[=opts_person]{opts_person}(constructor = c("person", "next"), ...)}
   \item \code{\link[=opts_POSIXct]{opts_POSIXct}(constructor = c("as.POSIXct", ".POSIXct", "as_datetime", "as.POSIXct.numeric", "as_datetime.numeric", "next", "atomic"), ..., origin = "1970-01-01")}
   \item \code{\link[=opts_POSIXlt]{opts_POSIXlt}(constructor = c("as.POSIXlt", "next", "list"), ...)}
@@ -234,13 +273,16 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_R_system_version]{opts_R_system_version}(constructor = c("R_system_version", "next", "list"), ...)}
   \item \code{\link[=opts_R6]{opts_R6}(constructor = c("R6Class", "next"), ...)}
   \item \code{\link[=opts_R6ClassGenerator]{opts_R6ClassGenerator}(constructor = c("R6Class", "next"), ...)}
+  \item \code{\link[=opts_raster]{opts_raster}(constructor = c("as.raster", "next"), ...)}
   \item \code{\link[=opts_raw]{opts_raw}(constructor = c("as.raw", "charToRaw"), ..., trim = NULL, fill = c("default", "rlang", "+", "...", "none"), compress = TRUE, representation = c("hexadecimal", "decimal"))}
   \item \code{\link[=opts_rel]{opts_rel}(constructor = c("rel", "next", "double"), ...)}
+  \item \code{\link[=opts_roman]{opts_roman}(constructor = c("as.roman", "next"), ...)}
   \item \code{\link[=opts_rowwise_df]{opts_rowwise_df}(constructor = c("default", "next", "list"), ...)}
   \item \code{\link[=opts_S4]{opts_S4}(constructor = c("new", "prototype"), ...)}
   \item \code{\link[=opts_S7_any]{opts_S7_any}(constructor = c("class_any", "next"), ...)}
   \item \code{\link[=opts_S7_base_class]{opts_S7_base_class}(constructor = c("S7", "next"), ...)}
   \item \code{\link[=opts_S7_class]{opts_S7_class}(constructor = c("new_class", "next"), ...)}
+  \item \code{\link[=opts_S7_class_ref]{opts_S7_class_ref}(constructor = c("environment", "next"), ...)}
   \item \code{\link[=opts_S7_external_generic]{opts_S7_external_generic}(constructor = c("new_external_generic", "next"), ...)}
   \item \code{\link[=opts_S7_generic]{opts_S7_generic}(constructor = c("new_generic", "next"), ...)}
   \item \code{\link[=opts_S7_object]{opts_S7_object}(constructor = c("S7_object", "next"), ...)}
@@ -249,23 +291,42 @@ We can provide calls to `opts_*()` functions to the `...` argument. Each of thes
   \item \code{\link[=opts_S7_union]{opts_S7_union}(constructor = c("default", "|", "new_union", "next"), ...)}
   \item \code{\link[=opts_Scale]{opts_Scale}(constructor = c("default", "next", "environment"), ...)}
   \item \code{\link[=opts_ScalesList]{opts_ScalesList}(constructor = c("ScalesList", "next", "list"), ...)}
+  \item \code{\link[=opts_sf]{opts_sf}(constructor = c("st_sf", "next"), ...)}
+  \item \code{\link[=opts_sfc]{opts_sfc}(constructor = c("st_sfc", "next"), ...)}
+  \item \code{\link[=opts_sfg]{opts_sfg}(constructor = c("st_sfg", "next"), ...)}
+  \item \code{\link[=opts_shiny.tag]{opts_shiny.tag}(constructor = c("tags", "tag", "next"), ...)}
+  \item \code{\link[=opts_shiny.tag.function]{opts_shiny.tag.function}(constructor = c("tagFunction", "next"), ...)}
+  \item \code{\link[=opts_shiny.tag.list]{opts_shiny.tag.list}(constructor = c("tagList", "next"), ...)}
   \item \code{\link[=opts_simpleCondition]{opts_simpleCondition}(constructor = c("simpleCondition", "next"), ...)}
   \item \code{\link[=opts_simpleError]{opts_simpleError}(constructor = c("simpleError", "next"), ...)}
   \item \code{\link[=opts_simpleMessage]{opts_simpleMessage}(constructor = c("simpleMessage", "next"), ...)}
   \item \code{\link[=opts_simpleUnit]{opts_simpleUnit}(constructor = c("unit", "next", "double"), ...)}
   \item \code{\link[=opts_simpleWarning]{opts_simpleWarning}(constructor = c("simpleWarning", "next"), ...)}
+  \item \code{\link[=opts_sparseMatrix]{opts_sparseMatrix}(constructor = c("sparseMatrix", "next"), ...)}
+  \item \code{\link[=opts_sparseVector]{opts_sparseVector}(constructor = c("sparseVector", "next"), ...)}
+  \item \code{\link[=opts_stepfun]{opts_stepfun}(constructor = c("stepfun", "next"), ...)}
+  \item \code{\link[=opts_Surv]{opts_Surv}(constructor = c("Surv", "next"), ...)}
+  \item \code{\link[=opts_table]{opts_table}(constructor = c("as.table", "next"), ...)}
   \item \code{\link[=opts_tbl_df]{opts_tbl_df}(constructor = c("tibble", "tribble", "next", "list"), ..., trailing_comma = TRUE, justify = c("left", "right", "centre", "none"), recycle = TRUE)}
-  \item \code{\link[=opts_theme]{opts_theme}(constructor = c("theme", "next", "list"), ...)}
+  \item \code{\link[=opts_tbl_ts]{opts_tbl_ts}(constructor = c("tsibble", "as_tsibble", "next"), ...)}
+  \item \code{\link[=opts_theme]{opts_theme}(constructor = c("default", "theme", "next", "list"), ...)}
   \item \code{\link[=opts_ts]{opts_ts}(constructor = c("ts", "next", "atomic"), ...)}
   \item \code{\link[=opts_uneval]{opts_uneval}(constructor = c("aes", "next", "list"), ...)}
+  \item \code{\link[=opts_units]{opts_units}(constructor = c("set_units", "as_units", "next"), ...)}
   \item \code{\link[=opts_vctrs_list_of]{opts_vctrs_list_of}(constructor = c("list_of", "next", "list"), ...)}
+  \item \code{\link[=opts_vctrs_rcrd]{opts_vctrs_rcrd}(constructor = c("new_rcrd", "next", "list"), ...)}
+  \item \code{\link[=opts_vctrs_unspecified]{opts_vctrs_unspecified}(constructor = c("unspecified", "next"), ...)}
+  \item \code{\link[=opts_vctrs_vctr]{opts_vctrs_vctr}(constructor = c("new_vctr", "next"), ...)}
   \item \code{\link[=opts_waiver]{opts_waiver}(constructor = c("waiver", "next", "list"), ...)}
   \item \code{\link[=opts_warning]{opts_warning}(constructor = c("warningCondition", "next"), ...)}
   \item \code{\link[=opts_weakref]{opts_weakref}(constructor = c("new_weakref"), ...)}
   \item \code{\link[=opts_xml_document]{opts_xml_document}(constructor = c("default", "next"), ..., simplify = TRUE)}
-  \item \code{\link[=opts_xts]{opts_xts}(constructor = c("as.xts.matrix", "next"), ...)}
+  \item \code{\link[=opts_xts]{opts_xts}(constructor = c("xts", "as.xts.matrix", "as.xts.data.frame", ".xts", "next"), ...)}
   \item \code{\link[=opts_yearmon]{opts_yearmon}(constructor = c("as.yearmon", "yearmon", "next"), ...)}
+  \item \code{\link[=opts_yearmonth]{opts_yearmonth}(constructor = c("yearmonth", "next"), ...)}
   \item \code{\link[=opts_yearqtr]{opts_yearqtr}(constructor = c("as.yearqtr", "yearqtr", "next"), ...)}
+  \item \code{\link[=opts_yearquarter]{opts_yearquarter}(constructor = c("yearquarter", "next"), ...)}
+  \item \code{\link[=opts_yearweek]{opts_yearweek}(constructor = c("yearweek", "next"), ...)}
   \item \code{\link[=opts_zoo]{opts_zoo}(constructor = c("zoo", "next"), ...)}
   \item \code{\link[=opts_zooreg]{opts_zooreg}(constructor = c("zooreg", "next"), ...)}
 }
